@@ -1,0 +1,16 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#9BBC9A",
+        "titleBar.activeBackground": "#B0CAAF",
+        "titleBar.activeForeground": "#131C12",
+        "titleBar.inactiveBackground": "#213121",
+        "titleBar.inactiveForeground": "#131C12",
+        "statusBar.background": "#293E29",
+        "statusBar.foreground": "#FAFBFA",
+        "statusBar.debuggingBackground": "#293E29",
+        "statusBar.debuggingForeground": "#FAFBFA",
+        "statusBar.noFolderBackground": "#293E29",
+        "statusBar.noFolderForeground": "#FAFBFA"
+    },
+    "print.colourScheme": "Color Brewer"
+}
