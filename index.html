@@ -1,2290 +1,1170 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Vax vox designer</title>
-    <style>
-        :root {
-            --bg: #0b0d10;
-            --bg-accent: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
-            --card: rgba(255, 255, 255, 0.06);
-            --border: rgba(255, 255, 255, 0.12);
-            --text: #e7eaf0;
-            --muted: #aab3c2;
-            --primary: #5ad1ff;
-            --primary-contrast: #04222a;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-            --radius-lg: 16px;
-            --radius-sm: 12px;
-            --gap-lg: 24px;
-            --gap-md: 16px;
-            --gap-sm: 10px;
-        }
-
-        @media (prefers-color-scheme: light) {
-            :root {
-                --bg: #f5f7fb;
-                --bg-accent: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.02));
-                --card: #ffffff;
-                --border: rgba(10, 23, 40, 0.08);
-                --text: #0f1726;
-                --muted: #51607a;
-                --primary: #0067ff;
-                --primary-contrast: #ffffff;
-                --shadow: 0 10px 25px rgba(16, 24, 40, 0.1);
-            }
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            background: radial-gradient(1200px 600px at 10% -10%, rgba(90, 209, 255, 0.12), transparent 60%),
-                radial-gradient(900px 500px at 90% -20%, rgba(128, 90, 213, 0.10), transparent 60%),
-                var(--bg);
-            color: var(--text);
-            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-            line-height: 1.45;
-        }
-
-        main.page {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 28px 20px 48px;
-        }
-
-        .page-header {
-            display: none;
-        }
-
-        .title {
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: 0.2px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--card);
-            padding: 8px 12px;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-        }
-
-        .subtitle {
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        .page-header .left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand {
-            height: 28px;
-            width: 28px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            background: #fff;
-        }
-
-        .stack {
-            display: grid;
-            grid-template-columns: 1fr minmax(240px, 300px);
-            gap: var(--gap-lg);
-            margin-bottom: 24px;
-            align-items: start;
-        }
-
-        @media (max-width: 900px) {
-            .stack {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow);
-            backdrop-filter: saturate(140%) blur(6px);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 18px 0;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .card-body {
-            padding: 14px 18px 18px;
-        }
-
-        .main-card .card-body {
-            padding-top: 6px;
-        }
-
-        /* Ensure main cards expand to full width of grid column */
-        .stack>.main-card {
-            width: 100%;
-        }
-
-        .section-grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: var(--gap-md);
-        }
-
-        .section-grid .span-12 {
-            grid-column: span 12;
-        }
-
-        .section-grid .span-6 {
-            grid-column: span 6;
-        }
-
-        .section-grid .span-4 {
-            grid-column: span 4;
-        }
-
-        @media (max-width: 700px) {
-
-            .section-grid .span-6,
-            .section-grid .span-4 {
-                grid-column: span 12;
-            }
-        }
-
-        .field {
-            display: grid;
-            gap: 6px;
-            margin-bottom: var(--gap-md);
-        }
-
-        /* Reduce space below MIDI pads before the Update button */
-        .pads-field {
-            margin-bottom: calc(var(--gap-md) / 4);
-        }
-
-        /* Reduce spacing below the voice name row to tighten space to Rate */
-        .name-row .field {
-            margin-bottom: 0;
-        }
-
-        label {
-            color: var(--muted);
-            font-size: 12px;
-            letter-spacing: 0.3px;
-        }
-
-        input[type="text"],
-        select {
-            appearance: none;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.06);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 10px 12px;
-            outline: none;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 14px;
-            font-weight: 600;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: rgba(255, 255, 255, 0.06);
-            color: var(--text);
-            cursor: pointer;
-            transition: transform 0.08s ease, background 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .btn.primary {
-            background: #5ad1ff;
-            color: var(--primary-contrast);
-            border-color: #38bff0;
-            box-shadow: 0 6px 18px rgba(90, 209, 255, 0.28);
-        }
-
-        /* Subtle grey button variant for secondary emphasis */
-        .btn.secondary {
-            background: rgba(180, 190, 205, 0.35);
-            border-color: var(--border);
-            color: var(--text);
-            box-shadow: var(--shadow);
-        }
-
-        /* Orange danger button (Delete) */
-        .btn.danger {
-            background: #ff8b3d;
-            color: #2b1300;
-            border-color: #ff7a1a;
-        }
-
-        /* Right-aligned button row */
-        .btn-row.end {
-            justify-content: flex-end;
-        }
-
-        /* Press feedback: invert colors briefly on press */
-        .btn:active,
-        .btn.primary:active {
-            filter: invert(1) hue-rotate(180deg);
-        }
-
-        .muted {
-            color: var(--muted);
-        }
-
-        /* Small status badge */
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 999px;
-            border: 1px solid var(--border);
-            background: rgba(255, 255, 255, 0.06);
-            font-size: 11px;
-            margin-left: 8px;
-        }
-
-        .badge.connected {
-            background: #21d694;
-            color: #062d1e;
-            border-color: #14b67a;
-        }
-
-        .connection-card {
-            border-radius: var(--radius-sm);
-        }
-
-        /* Right column wrapper to stack cards vertically */
-        .right-column {
-            display: grid;
-            gap: var(--gap-lg);
-            align-content: start;
-        }
-
-        .brand-card {
-            min-height: 64px;
-        }
-
-        .brand-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 4px;
-        }
-
-        .brand-card .brand-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: 0.2px;
-            margin: 0;
-        }
-
-        .brand-card .brand {
-            height: 28px;
-            width: 28px;
-        }
-
-        /* NexusUI theming hooks */
-        #voiceRadio canvas,
-        #rateSlider canvas,
-        #avgPitchDial canvas,
-        #pitchRateDial canvas,
-        #breathinessDial canvas {
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .btn-row input#speakText,
-        .btn-row input#designedCommand {
-            flex: 1;
-            min-width: 220px;
-        }
-
-        /* Ensure tooltip containers don't interfere with flex layout */
-        .btn-row .tooltip {
-            display: flex;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .btn-row .tooltip:not(:first-child) {
-            flex: 0 0 auto;
-        }
-
-        .btn-row .tooltip:first-child {
-            flex: 1;
-            min-width: 220px;
-        }
-
-        /* Right-aligned Update row: ensure full width and no wrapping */
-        .btn-row.end {
-            width: 100%;
-            flex-wrap: nowrap;
-            justify-content: flex-end;
-        }
-
-        /* In right-aligned rows (e.g., Update), keep tooltip wrapper sized to the button */
-        .btn-row.end .tooltip {
-            flex: 0 0 auto;
-            display: inline-block;
-        }
-
-        /* Override earlier first-child flex expansion for the Update row */
-        .btn-row.end .tooltip:first-child {
-            flex: 0 0 auto;
-            min-width: 0;
-        }
-
-        /* Align Update tooltip same as Speak (centered above the button) */
-        .btn-row.end .tooltip .tooltiptext {
-            left: 50%;
-            right: auto;
-            transform: translateX(-50%);
-        }
-
-        /* Presets UI */
-        .presets-grid {
-            display: grid;
-            grid-template-columns: minmax(140px, 1fr) max-content minmax(180px, 1fr) max-content;
-            gap: 8px;
-            align-items: center;
-        }
-
-        #presetName {
-            min-width: 160px;
-        }
-
-        #presetList {
-            min-width: 180px;
-            padding-right: 28px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23aab3c2' d='M1.41 0L6 4.59 10.59 0 12 1.41 6 7.41 0 1.41z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 12px 8px;
-        }
-
-        .presets-actions {
-            flex-wrap: nowrap;
-            justify-content: flex-end;
-        }
-
-        .voice-inline {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .voice-legend {
-            --voice-count: 9;
-            display: grid;
-            grid-template-columns: repeat(var(--voice-count), 1fr);
-            gap: 0;
-            text-align: center;
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-        .voice-legend span {
-            white-space: nowrap;
-        }
-
-        #voiceRadio {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        #voiceLegend {
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        #voiceRadio canvas {
-            display: block;
-        }
-
-        label .range {
-            display: block;
-            font-size: 11px;
-            color: var(--muted);
-            opacity: 0.85;
-        }
-
-        /* 3x4 input matrix */
-        .matrix-rows {
-            display: grid;
-            gap: var(--gap-md);
-        }
-
-        .matrix-row {
-            display: grid;
-            grid-template-columns: max-content repeat(3, 1fr);
-            gap: var(--gap-md);
-            align-items: center;
-        }
-
-        .matrix-row input[type="text"] {
-            text-align: center;
-        }
-
-        .matrix-btn canvas {
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .input-with-btn {
-            display: grid;
-            grid-template-columns: 1fr max-content;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .input-with-btn>div canvas {
-            height: 38px !important;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .matrix-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 4px var(--gap-md);
-            table-layout: fixed;
-        }
-
-        .matrix-table td {
-            vertical-align: top;
-            padding: 0;
-        }
-
-        .matrix-table input[type="text"] {
-            width: 130%;
-            text-align: center;
-            display: block;
-        }
-
-        /* Buttons take fixed width; inputs get the remaining space */
-        .matrix-table td:nth-child(2),
-        .matrix-table td:nth-child(4),
-        .matrix-table td:nth-child(6) {
-            width: 20;
-        }
-
-        .mx-btn canvas {
-            height: 38px !important;
-            width: 28px !important;
-            border-radius: 50%;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            background: rgba(180, 190, 205, 0.35);
-        }
-
-        .mx-cell {
-            display: grid;
-            justify-items: center;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* Pull the inputs closer to the preceding button (columns 3 and 5) */
-        .matrix-table td:nth-child(3) input[type="text"],
-        .matrix-table td:nth-child(5) input[type="text"] {
-            margin-left: -6px;
-        }
-
-        /* MIDI pads: 4 rows × 3 columns */
-        .pads-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--gap-md);
-        }
-
-        .pad-cell {
-            display: grid;
-            justify-items: center;
-            align-items: center;
-            gap: 6px;
-        }
-
-        #midiPads canvas {
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .pad-label {
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        /* Matrix + pads side-by-side */
-        .matrix-pads {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--gap-lg);
-            align-items: start;
-        }
-
-        @media (max-width: 900px) {
-            .matrix-pads {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Card separator */
-        .card-sep {
-            border: 0;
-            border-top: 1px solid var(--border);
-            margin: 12px 0;
-        }
-
-        .input-with-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* Remove bottom margin for compact label rows */
-        .compact-field {
-            margin-bottom: 0;
-        }
-
-        /* Pull the next grid row (Update button) closer to the pads */
-        .tight-after {
-            margin-bottom: calc(-0.5 * var(--gap-md));
-        }
-
-        .tight-after-more {
-            margin-bottom: calc(-0.75 * var(--gap-md));
-        }
-
-        /* Nudge the Update row upward */
-        .update-row {
-            margin-top: calc(-0.5 * var(--gap-md));
-        }
-
-        /* Serial monitor */
-        .log-area {
-            margin: 0;
-            padding: 10px 12px;
-            background: #21d694;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-            font-size: 12px;
-            line-height: 1.4;
-            color: #062d1e;
-            max-height: 160px;
-            overflow: auto;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        /* Collapsible section styles */
-        .collapsible-header {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .collapsible-header:hover {
-            opacity: 0.8;
-        }
-
-        .collapsible-title-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .collapsible-toggle {
-            background: none;
-            border: none;
-            color: var(--muted);
-            font-size: 14px;
-            cursor: pointer;
-            padding: 2px 4px;
-            border-radius: 4px;
-            transition: transform 0.2s ease, color 0.2s ease;
-            margin-top: 2px;
-        }
-
-        .collapsible-toggle:hover {
-            color: var(--text);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .collapsible-toggle.collapsed {
-            transform: rotate(-90deg);
-        }
-
-        .collapsible-content {
-            overflow: visible;
-            /* allow tooltips to extend outside */
-            transition: max-height 0.3s ease, opacity 0.3s ease;
-        }
-
-        .collapsible-content.collapsed {
-            max-height: 0;
-            opacity: 0;
-        }
-
-        .collapsible-content.expanded {
-            max-height: 1000px;
-            opacity: 1;
-        }
-
-        /* Ensure grid children keep their layout when wrapped by collapsible-content */
-        .section-grid .collapsible-content {
-            display: contents;
-            /* children participate in parent grid */
-        }
-
-        .section-grid .collapsible-content.collapsed {
-            display: none;
-            /* hide all tuning rows when collapsed */
-        }
-
-        /* Tooltip styles */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: var(--text);
-            color: var(--bg);
-            text-align: left;
-            border-radius: 6px;
-            padding: 8px 12px;
-            position: absolute;
-            z-index: 2147483647;
-            left: 50%;
-            bottom: calc(100% + 8px);
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 12px;
-            line-height: 1.4;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        /* Ensure cards don't create stacking context issues */
-        .card {
-            position: relative;
-            z-index: 1;
-        }
-
-        .right-column {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Ensure the left main card (tooltips) paints above the right column cards */
-        .main-card {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Force tooltips to appear above everything */
-        .tooltip {
-            z-index: 999999 !important;
-        }
-
-        .tooltip .tooltiptext {
-            z-index: 999999 !important;
-            position: absolute !important;
-        }
-
-        .tooltip .tooltiptext::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: var(--text) transparent transparent transparent;
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        /* Tooltip positioning variants */
-        .tooltip-left .tooltiptext {
-            bottom: auto;
-            top: 50%;
-            left: auto;
-            right: 125%;
-            margin-left: 0;
-            margin-top: -20px;
-        }
-
-        .tooltip-left .tooltiptext::after {
-            top: 50%;
-            left: 100%;
-            margin-top: -5px;
-            margin-left: 0;
-            border-color: transparent var(--text) transparent transparent;
-        }
-
-        .tooltip-right .tooltiptext {
-            bottom: auto;
-            top: 50%;
-            right: auto;
-            left: 125%;
-            margin-left: 0;
-            margin-top: -20px;
-        }
-
-        .tooltip-right .tooltiptext::after {
-            top: 50%;
-            right: 100%;
-            left: auto;
-            margin-top: -5px;
-            margin-left: 0;
-            border-color: transparent transparent transparent var(--text);
-        }
-
-        /* Tooltip toggle styles */
-        .tooltip-toggle-container {
-            display: flex;
-            align-items: center;
-        }
-
-        #tooltipToggle {
-            padding: 8px 12px;
-            min-width: auto;
-            font-size: 16px;
-            line-height: 1;
-        }
-
-        #tooltipToggle.active {
-            background: #D1F1FF;
-            /* bulb background when ON */
-            color: var(--text);
-            border-color: #38bff0;
-        }
-
-        #tooltipToggle.active:hover {
-            background: #38bff0;
-        }
-
-        /* Tooltip visibility control */
-        .tooltips-disabled .tooltip .tooltiptext {
-            display: none !important;
-        }
-
-        .tooltips-disabled .tooltip:hover .tooltiptext {
-            display: none !important;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/nexusui@latest/dist/NexusUI.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Design voices, audition speech, and save sentences to your Kraftor over USB.">
+  <title>VAX Designer</title>
+<!-- Action icons: Lucide static 0.468.0. ISC License
+
+Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2022 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2022.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ -->
+  <style>
+    :root { color-scheme: dark; --bg:#10161d; --surface:#171e27; --surface-2:#1b232d; --surface-3:#232d39; --line:#2f3c49; --line-soft:#26313d; --text:#edf2f7; --muted:#a4afbd; --accent:#65b9f0; --accent-soft:rgba(71,148,211,.17); --success:#6fd482; --danger:#ed948a; --warning:#ebc471; --radius:6px; --shadow:0 20px 70px rgba(0,0,0,.35); font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    * { box-sizing:border-box; } [hidden] { display:none!important; }
+    html,body { margin:0; min-height:100%; } body { background:var(--bg); color:var(--text); font-size:14px; overflow:hidden; }
+    button,input,select,textarea { font:inherit; color:inherit; } button,input,select,textarea:focus { accent-color:var(--accent); }
+    button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+    .app-header { height:76px; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid var(--line); background:#10161d; }
+    .brand h1 { margin:0; font-size:24px; font-weight:650; letter-spacing:-.03em; } .brand p { margin:5px 0 0; color:var(--muted); font-size:12px; } a { color:var(--accent); text-underline-offset:3px; }
+    .connection { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:10px; } .connection-status { color:var(--muted); font-size:13px; } .connection select { width:auto; max-width:240px; }
+    .status-dot { width:9px; height:9px; flex-shrink:0; border-radius:50%; background:#687584; box-shadow:0 0 0 4px rgba(104,117,132,.13); } .status-dot.connected { background:var(--success); box-shadow:0 0 0 4px rgba(111,212,130,.12); }
+    .workspace { display:grid; grid-template-columns:40% 60%; height:calc(100dvh - 76px); }
+    .voice-panel,.library-panel { min-width:0; min-height:0; padding:20px 24px; }
+    .voice-panel { overflow:auto; background:#111820; border-right:1px solid var(--line); }
+    .library-panel { display:flex; flex-direction:column; overflow:hidden; background:#10161d; }
+    .slot-editor { padding:0; margin:0; border:0; box-shadow:none; }
+    .slot-editor-head { position:sticky; top:0; z-index:5; background:#111820; display:flex; align-items:center; justify-content:space-between; gap:10px; padding-bottom:14px; margin-bottom:14px; border-bottom:1px solid var(--line); }
+    .slot-editor-title { display:flex; align-items:center; flex-wrap:wrap; gap:20px; } .slot-editor-title h2 { margin:0; font-size:24px; letter-spacing:-.03em; font-weight:650; }
+    .field { margin-bottom:14px; } .field-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; } .field label,.slider-row label { font-weight:600; }
+    .hint,.counter { color:var(--muted); font-size:12px; } .counter.over { color:var(--danger); } #byteBudget:not(.over) { display:none; } .section-title .cc-badge { float:right; margin:0; font-size:11px; } .sentence-tools { display:flex; align-items:center; gap:10px; }
+    input[type=text],input[type=number],select,textarea { width:100%; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface-2); padding:10px 12px; }
+    textarea { resize:vertical; min-height:96px; line-height:1.5; } .sentence-field { margin:0; } .sentence-field textarea { height:100px; } .mono,code { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    .btn { display:inline-flex; justify-content:center; align-items:center; gap:7px; font-size:13px; font-weight:600; line-height:1.25; border:1px solid var(--line); border-radius:var(--radius); padding:9px 12px; background:var(--surface-2); white-space:nowrap; cursor:pointer; }
+    .btn:hover:not(:disabled) { background:var(--surface-3); border-color:#53677b; } .btn:disabled { opacity:.42; cursor:not-allowed; } .btn.primary { border-color:#368bc5; background:#165582; color:#eef8ff; } .btn.success { border-color:#38834c; background:#1a3f28; color:#e0f9e6; } .btn.danger { border-color:#864c44; background:#3c2423; color:#efaaa1; }
+    .icon { width:14px; height:14px; flex-shrink:0; stroke-width:1.8; } .editor-actions { position:sticky; top:58px; z-index:4; background:#111820; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:12px; }
+    .editor-actions .btn { padding:10px 8px; font-size:13px; }
+    .editor-caption { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin:16px 0 14px; padding-bottom:0; border-bottom:1px solid var(--line); color:var(--muted); font-size:11px; }
+    .section-title { margin:0 0 13px; font-size:17px; color:var(--accent); letter-spacing:-.02em; } .voice-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .voice-option { padding:9px 8px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface-2); cursor:pointer; font-size:14px; } .voice-option:hover { border-color:#53677b; } .voice-option.selected { background:#16364f; border-color:var(--accent); }
+    .slider-row { display:grid; grid-template-columns:180px minmax(0,1fr) 68px; align-items:center; gap:12px; margin:7px 0; min-height:34px; }
+    input[type=range] { width:100%; min-width:0; accent-color:var(--accent); } .slider-row label { font-size:14px; } .slider-value { text-align:center; padding:8px 6px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface-2); color:var(--accent); font-variant-numeric:tabular-nums; }
+    .speech-slider-row input[type=number] { padding:8px 6px; text-align:center; color:var(--accent); } #designControls { margin:0; } .design-reset-row { margin:12px 0 8px; }
+    .cc-badge { display:inline-block; margin-left:6px; padding:2px 5px; border:1px solid #345771; border-radius:4px; color:var(--accent); font-size:11px; font-weight:650; white-space:nowrap; vertical-align:middle; } .cc-badge.unavailable { opacity:.45; }
+    .sentence-format-hint { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+    .help-link { border:0; padding:5px 0; background:transparent; color:var(--accent); text-decoration:underline; text-underline-offset:3px; cursor:pointer; font-size:12px; }
+    .native-example { margin:12px 0; } .native-example strong { font-size:14px; } .native-example pre { margin:6px 0; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface-2); white-space:pre-wrap; overflow-wrap:anywhere; font-size:13px; line-height:1.5; user-select:text; }
+    #dectalkHelpTopic summary { scroll-margin-top:72px; }
+    .field-help { margin:6px 0 0; color:var(--muted); font-size:12px; line-height:1.5; } #midiControlHint { font-size:11px; }
+    .midi-channel-panel { margin-top:17px; padding:16px 0 0; border:0; border-top:1px solid var(--line); background:transparent; }
+    .midi-channel-head { display:flex; justify-content:space-between; align-items:center; gap:12px; } .midi-channel-head strong { color:var(--accent); font-size:14px; } .midi-channel-body { display:flex; align-items:center; gap:14px; margin-top:10px; } .midi-channel-panel .field-help { margin:0; }
+    .dip-housing { display:flex; align-items:start; gap:10px; padding:8px 10px 6px; border:1px solid #a75a50; border-radius:5px; background:#682e29; flex-shrink:0; } .dip-housing.unknown { border-color:#49525d; background:#29313b; } .dip-on-label { font-size:10px; font-weight:700; color:#f3ddd8; padding-top:3px; min-width:28px; } .dip-cell { display:grid; justify-items:center; gap:5px; color:#fff0ec; font-size:10px; font-weight:700; } .dip-track { position:relative; width:22px; height:34px; background:#2b1110; border:1px solid #ba746d; border-radius:2px; } .dip-track::after { content:''; position:absolute; width:16px; height:12px; left:2px; top:2px; border-radius:1px; background:#f0eee5; box-shadow:0 1px 2px #000; } .dip-track.off::after { top:18px; } .dip-track.unknown::after { top:10px; opacity:.3; }
+    .terminal-panel { margin-top:18px; border-top:1px solid var(--line); padding-top:12px; } summary { cursor:pointer; color:var(--muted); font-size:13px; font-weight:600; } .terminal-body { padding-top:12px; } .terminal-body p { margin:0 0 10px; line-height:1.5; } .terminal-row { display:grid; grid-template-columns:1fr auto; gap:8px; margin-top:10px; } .terminal-log { white-space:pre-wrap; overflow:auto; max-height:160px; background:var(--bg); padding:10px; font-size:11px; color:var(--muted); }
+    .button-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; } .button-row.end { justify-content:flex-end; }
+    .library-head { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:12px; } .library-title { display:flex; align-items:center; gap:20px; } .library-title h2 { margin:0; font-size:23px; font-weight:600; color:var(--accent); letter-spacing:-.02em; } .device-summary { color:var(--muted); font-size:11px; margin-top:4px; } .toolbar { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:9px; }
+    .memory-tools { border:1px solid var(--line); border-radius:var(--radius); padding:10px 12px; margin-bottom:7px; background:#141c25; } .memory-tools .button-row { padding-top:10px; }
+    .notice { min-height:28px; padding:6px 0; margin:0 0 6px; color:var(--muted); font-size:12px; line-height:1.4; } .notice.success { color:#a1d7ae; } .notice.error { color:var(--danger); }
+    .slot-table-wrap { flex:1; min-height:240px; overflow:auto; border:1px solid var(--line); border-radius:var(--radius); background:#111923; }
+    table { width:100%; border-collapse:collapse; table-layout:fixed; } th { position:sticky; top:0; z-index:2; padding:13px 14px; background:#18212b; color:var(--muted); font-size:11px; font-weight:650; letter-spacing:.045em; text-transform:uppercase; text-align:left; border-bottom:1px solid var(--line); } td { padding:13px 14px; height:46px; border-bottom:1px solid var(--line-soft); vertical-align:middle; font-size:14px; } tr { cursor:pointer; } tbody tr:hover { background:#182533; } tbody tr.selected { background:#1b354b; box-shadow:inset 3px 0 var(--accent); } .slot-number,.slot-note { font-variant-numeric:tabular-nums; } .slot-preview,.slot-profile { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .slot-profile { color:var(--muted); font-size:12px; }
+    .slot-select { padding:0; border:0; background:transparent; color:inherit; font:inherit; cursor:pointer; } .state { font-size:12px; font-weight:650; } .state.saved { color:var(--success); } .state.modified { color:var(--warning); } .state.empty { color:var(--muted); font-weight:400; }
+    .screen-reader-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    dialog { color:var(--text); } dialog::backdrop { background:rgba(3,5,7,.84); }
+    .help-dialog { width:min(780px,calc(100% - 32px)); max-height:calc(100dvh - 32px); overflow:auto; border:1px solid var(--line); border-radius:8px; padding:24px; background:var(--surface); }
+    .help-head { display:flex; justify-content:space-between; align-items:center; gap:12px; position:sticky; top:-24px; padding:10px 0; margin:-10px 0 16px; background:var(--surface); border-bottom:1px solid var(--line); }
+    .help-head h2 { margin:0; font-size:22px; } .help-topic { border-top:1px solid var(--line); } .help-topic summary { padding:13px 0; font-size:15px; color:var(--accent); } .help-topic-body { padding:0 0 12px; } .help-topic-body p,.help-topic-body li { max-width:65ch; } .help-dialog h3 { font-size:16px; color:var(--accent); margin:0 0 9px; } .help-dialog p,.help-dialog li { font-size:14px; line-height:1.6; color:#d3dce6; } .help-dialog p { margin:8px 0; } .help-dialog ol { margin:0; padding-left:22px; } .help-dialog table { table-layout:auto; } .help-dialog th { position:static; text-transform:none; font-size:12px; padding:8px; } .help-dialog td { height:auto; padding:8px; font-size:12px; } .help-dialog tr { cursor:auto; }
+    .bulk-paste-dialog { width: min(640px, calc(100% - 32px)); max-height: calc(100vh - 32px); overflow: auto; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+    .bulk-paste-dialog::backdrop { background: rgba(3, 5, 7, .85); }
+    .bulk-paste-dialog h2 { margin: 0 0 10px; color: var(--accent); font-size: 18px; }
+    .bulk-paste-dialog .field-help { font-size: 12px; margin-bottom: 16px; }
+    .bulk-paste-start { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
+    .bulk-paste-start input { width: 86px; }
+    .bulk-paste-summary { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .bulk-paste-error { color: var(--danger); font-size: 12px; }
+    .bulk-paste-preview { max-height: 200px; overflow: auto; list-style: none; padding: 0; margin: 12px 0 18px; border: 1px solid var(--line); border-radius: var(--radius); }
+    .bulk-paste-preview:empty { display: none; }
+    .bulk-paste-preview li { padding: 9px 12px; border-bottom: 1px solid var(--line-soft); overflow-wrap: anywhere; }
+    .bulk-paste-preview li:last-child { border-bottom: 0; }
+    .bulk-paste-preview .hint { display: block; margin-bottom: 4px; }
+
+
+    .reference-backdrop { width:min(1180px,calc(100% - 32px)); max-height:calc(100dvh - 32px); padding:0; border:0; background:white; overflow:auto; color:#1b2430; }
+    .midi-reference-sheet { padding:22px; background:#fff; color:#1b2430; font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .reference-actions { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; } .reference-actions .btn { background:#f2f5f8; border-color:#bac5d1; color:#1b2430; } .reference-actions .btn.primary { background:#1b527a; color:#fff; }
+    .midi-ref-head { border-bottom:2px solid #273746; padding-bottom:12px; margin-bottom:16px; } .midi-ref-title { font-size:25px; margin:0 0 8px; } .midi-ref-sub { color:#4a5868; font-size:12px; line-height:1.5; margin:4px 0; } .midi-ref-block-title { break-after:avoid; font-size:16px; margin:17px 0 8px; } .midi-reference-sheet table { table-layout:auto; font-size:12px; } .midi-reference-sheet th { position:static; padding:8px; background:#edf1f5; color:#354556; font-size:11px; border:1px solid #c5ced7; } .midi-reference-sheet td { height:auto; padding:8px; color:#1b2430; font-size:12px; border:1px solid #c5ced7; overflow-wrap:anywhere; } .midi-reference-sheet tr { cursor:auto; box-shadow:none; } .midi-reference-sheet .col-slot,.midi-reference-sheet .col-note { width:44px; } .midi-reference-sheet .col-name { width:52px; white-space:nowrap; } .midi-reference-sheet .col-profile { width:100px; white-space:nowrap; } .midi-reference-sheet .col-design { width:28%; font-size:11px; } .midi-reference-sheet .col-text { width:42%; } .midi-ref-foot { margin-top:14px; border-top:1px solid #c5ced7; padding-top:10px; font-size:11px; line-height:1.5; color:#4a5868; }
+    .reference-cc-grid { break-inside:avoid; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; } .reference-cc-item { font-size:11px; border-top:1px solid #c5ced7; padding-top:6px; line-height:1.5; }
+    @media(max-width:1360px) { .editor-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } .library-head { align-items:flex-start; } .toolbar .btn { padding:8px 9px; font-size:12px; } }
+    @media(max-width:1000px) { body { overflow:auto; } .workspace { display:block; height:auto; } .voice-panel { overflow:visible; border-right:0; border-bottom:1px solid var(--line); } .library-panel { min-height:680px; overflow:visible; } .slot-table-wrap { height:550px; flex:none; } .editor-actions { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+    @media(max-width:700px) { .app-header { height:auto; flex-direction:column; align-items:stretch; padding:16px; gap:12px; } .connection { justify-content:flex-start; } .connection-status { font-size:12px; } .voice-panel,.library-panel { padding:18px 16px; } .editor-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } .editor-actions .btn { font-size:13px; } .slider-row { grid-template-columns:144px minmax(0,1fr) 54px; gap:8px; } .slider-row label { font-size:12px; } .slider-row label .cc-badge { display:table; margin:3px 0 0; } .library-head { flex-direction:column; gap:12px; } .toolbar { justify-content:flex-start; } .sentence-tools { gap:6px; } .sentence-tools .btn { font-size:11px; padding:8px; } .midi-channel-body { align-items:start; } .dip-housing { gap:7px; padding:7px; } .dip-on-label { min-width:20px; } .midiSwitchHelp { font-size:11px; } .help-dialog { padding:18px; } .help-head { top:-18px; } .help-head h2 { font-size:19px; } .help-dialog th,.help-dialog td { padding:6px; font-size:11px; } .slot-table-wrap th,.slot-table-wrap td { padding:10px; } .slot-table-wrap th:nth-child(4),.slot-table-wrap td:nth-child(4) { display:none; } .slot-table-wrap col:nth-child(4) { width:0!important; } .reference-cc-grid { grid-template-columns:repeat(2,1fr); } .midi-reference-sheet { padding:16px; } }
+    @media print { @page { size:A4 landscape; margin:10mm; } html,body { height:auto!important; overflow:visible!important; background:#fff!important; color:#000!important; } body.print-reference-sheet .app-header,body.print-reference-sheet .workspace,body.print-reference-sheet #bulkPasteDialog,body.print-reference-sheet #helpDialog { display:none!important; } dialog::backdrop { display:none!important; } body.print-reference-sheet #referenceBackdrop { display:block!important; position:static!important; width:auto!important; max-width:none!important; height:auto!important; max-height:none!important; overflow:visible!important; margin:0!important; padding:0!important; border:0!important; box-shadow:none!important; } .midi-reference-sheet { padding:0!important; overflow:visible!important; } .no-print { display:none!important; } .midi-reference-sheet th { position:static!important; background:#fff!important; font-size:9pt; padding:5px; } .midi-reference-sheet td { font-size:9pt; padding:5px; } .midi-reference-sheet .col-design { font-size:8pt; } .midi-reference-sheet thead { display:table-header-group; } .midi-reference-sheet tr { break-inside:avoid; } .midi-ref-title { font-size:18pt; } .midi-ref-sub { font-size:9pt; } .reference-cc-grid { grid-template-columns:repeat(4,1fr); } .reference-cc-item,.midi-ref-foot { font-size:8pt; } }
+  </style>
 </head>
-
 <body>
-    <main class="page">
-        <div class="page-header">
-            <div class="left">
-                <div class="title">Vax
-                    vox designer</div>
-            </div>
-            <div class="subtitle">Polaxis - Vax vox designer version 1.0</div>
+  <header class="app-header">
+    <div class="brand">
+      <h1>VAX Designer</h1>
+      <p>Voice editor and Kraftor memory library · <a href="https://github.com/deladriere/VAX_Designer" target="_blank" rel="noopener noreferrer">Source code</a></p>
+    </div>
+    <div class="connection">
+      <span id="connectionDot" class="status-dot" aria-hidden="true"></span>
+      <span id="connectionStatus" class="connection-status" role="status">Kraftor disconnected</span>
+      <select id="midiOutput" aria-label="Choose your Kraftor" hidden><option value="">Choose your Kraftor…</option></select>
+      <button id="connectButton" class="btn primary" type="button">Connect Kraftor</button>
+      <button id="helpButton" class="btn" type="button">Help</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="voice-panel" aria-labelledby="slotEditorTitle">
+      <div class="slot-editor">
+        <div class="slot-editor-head"><div class="slot-editor-title"><h2 id="slotEditorTitle">Slot 0</h2><span id="slotMidiNote" class="hint">MIDI note 36</span></div><span id="slotEditorState" class="state empty">Empty</span></div>
+        <div class="field sentence-field">
+          <div class="field-head"><label for="slotSentence">Sentence</label><div class="sentence-tools"><span id="slotSentenceCounter" class="counter">0 / 200 characters</span><button id="bulkPasteButton" class="btn" type="button">Bulk paste…</button><button id="undoBulkPasteButton" class="btn" type="button" hidden>Undo paste</button></div></div>
+          <textarea id="slotSentence" maxlength="200" aria-describedby="sentenceFormatHint" placeholder="Type the sentence for this slot."></textarea>
+          <div class="field-help sentence-format-hint"><span id="sentenceFormatHint">Plain text or native DECtalk syntax.</span><button id="dectalkHelpButton" class="help-link" type="button" aria-haspopup="dialog" aria-controls="helpDialog">DECtalk help</button></div>
         </div>
+        <div class="editor-actions">
+          <button id="auditionButton" class="btn primary" type="button" disabled><svg
+  class="icon" aria-hidden="true" focusable="false"
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <polygon points="6 3 20 12 6 21 6 3" />
+</svg> Audition draft</button>
+          <button id="saveSlotButton" class="btn success" type="button" disabled><svg
+  class="icon" aria-hidden="true" focusable="false"
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+  <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" />
+  <path d="M7 3v4a1 1 0 0 0 1 1h7" />
+</svg> Save to Kraftor</button>
+          <button id="playSlotButton" class="btn" type="button" disabled><svg
+  class="icon" aria-hidden="true" focusable="false"
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <polygon points="6 3 20 12 6 21 6 3" />
+</svg> Play saved slot</button>
+          <button id="eraseSlotButton" class="btn danger" type="button" disabled><svg
+  class="icon" aria-hidden="true" focusable="false"
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 6h18" />
+  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+  <line x1="10" x2="10" y1="11" y2="17" />
+  <line x1="14" x2="14" y1="11" y2="17" />
+</svg> Erase slot</button>
+        </div>
+        <div class="editor-caption"><span id="byteBudget" class="counter">7 / 248 bytes</span></div>
+        <h3 id="voiceTitle" class="section-title">Voice settings<span class="cc-badge" data-cc="16" data-range="0–8 select Paul through Wendy">Voice CC 16</span></h3>
+      <div class="field">
+        <div class="field-head"><label>Voice </label><span id="voiceValue" class="screen-reader-only">Paul</span></div>
+        <div id="voiceGrid" class="voice-grid" role="radiogroup" aria-label="VAX voice"></div>
+      </div>
 
-        <!-- Top: Serial Communication -->
-        <section class="stack" aria-label="Serial section">
-            <div class="card main-card" aria-labelledby="serial-title">
-                <div class="card-header">
-                    <div class="collapsible-title-container collapsible-header" id="tuningHeader">
-                        <h2 id="serial-title" class="card-title">Voice tuning</h2>
-                        <button class="collapsible-toggle" id="tuningToggleBtn" type="button"
-                            aria-label="Toggle Voice tuning">▼</button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="section-grid">
-                        <div class="collapsible-content expanded" id="tuningSection">
-                            <div class="span-12 name-row">
-                                <div class="field">
-                                    <label>Name</label>
-                                    <div id="voiceRadio"></div>
-                                    <div class="voice-legend" id="voiceLegend" aria-hidden="true"></div>
-                                </div>
-                            </div>
 
-                            <div class="span-12">
-                                <div class="field">
-                                    <label>Rate <span class="range">75–600</span></label>
-                                    <div class="tooltip">
-                                        <div id="rateSlider"></div>
-                                        <span class="tooltiptext">Controls the speech rate in words per minute. Higher
-                                            values make the voice speak faster.</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="span-3">
-                                <div class="field">
-                                    <div class="tooltip">
-                                        <label>Average pitch <span class="range">50–500</span></label>
-                                        <span class="tooltiptext">Controls the base pitch of the voice. Higher values
-                                            make
-                                            the voice sound higher-pitched.</span>
-                                    </div>
-                                    <div id="avgPitchDial"></div>
-                                </div>
-                            </div>
-                            <div class="span-3">
-                                <div class="field">
-                                    <div class="tooltip">
-                                        <label>Pitch range <span class="range">0–100</span></label>
-                                        <span class="tooltiptext">Controls how much the pitch can vary during speech.
-                                            Higher
-                                            values allow more pitch variation.</span>
-                                    </div>
-                                    <div id="pitchRateDial"></div>
-                                </div>
-                            </div>
-                            <div class="span-3">
-                                <div class="field">
-                                    <div class="tooltip">
-                                        <label>Breathiness <span class="range">0–70</span></label>
-                                        <span class="tooltiptext">Adds breathy quality to the voice. Higher values make
-                                            the
-                                            voice sound more airy and whispery.</span>
-                                    </div>
-                                    <div id="breathinessDial"></div>
-                                </div>
-                            </div>
+        <div class="slider-row speech-slider-row"><label for="speechRate">Speech rate <span class="cc-badge" data-cc="17" data-range="0–127 → speech rate 75–600">CC 17</span></label><input id="speechRate" type="range" min="75" max="600" value="75"><input id="speechRateNumber" type="number" min="75" max="600" value="75" aria-label="Speech rate value"></div>
+        <div id="designControls" class="field" aria-label="Voice design controls"></div>
+        <div class="button-row design-reset-row"><button id="resetDesignButton" class="btn" type="button">Reset voice settings</button></div>
+        <p id="midiControlHint" class="field-help">CC16–22 require VAX firmware 1.3. CC121 clears live overrides.</p>
+      <section class="midi-channel-panel" aria-label="Kraftor MIDI channel and physical switches">
+        <div class="midi-channel-head"><strong id="midiChannelStatus">Connect to read channel</strong><button id="midiStatusRefreshButton" class="btn" type="button" disabled>Refresh</button></div>
+        <div class="midi-channel-body">
+          <div id="dipHousing" class="dip-housing unknown" role="img" aria-label="DIP switch positions unknown">
+            <span class="dip-on-label" aria-hidden="true">ON ↑</span>
+            <span class="dip-cell" aria-hidden="true"><span id="dipSwitch1" class="dip-track unknown"></span>1</span>
+            <span class="dip-cell" aria-hidden="true"><span id="dipSwitch2" class="dip-track unknown"></span>2</span>
+            <span class="dip-cell" aria-hidden="true"><span id="dipSwitch3" class="dip-track unknown"></span>3</span>
+            <span class="dip-cell" aria-hidden="true"><span id="dipSwitch4" class="dip-track unknown"></span>4</span>
+          </div>
+          <p id="midiSwitchHelp" class="field-help">The four switches set channel 1–16. Read from Kraftor through the main connection.</p>
+        </div>
+      </section>
+      <details class="terminal-panel">
+        <summary>Older firmware / serial tools</summary>
+        <div class="terminal-body">
+          <p class="hint">Use this connection with earlier VAX firmware or the serial commands documented in the VAX guide. Voice editing and auditioning work here; memory management needs the current firmware and the main Connect Kraftor button.</p>
+          <div class="button-row"><button id="serialConnectButton" class="btn" type="button">Connect serial</button><a href="https://www.polaxis.be/vax-serial-midi/" target="_blank" rel="noopener noreferrer">VAX serial guide</a></div>
+          <div class="terminal-row">
+            <input id="serialCommand" class="mono" type="text" placeholder="/i or text to speak" autocomplete="off">
+            <button id="serialSendButton" class="btn" type="button" disabled>Send</button>
+          </div>
+          <pre id="serialLog" class="terminal-log" aria-live="polite">Serial output will appear here.</pre>
+        </div>
+      </details>
 
-                            <div class="span-3">
-                                <div class="field">
-                                    <div class="tooltip">
-                                        <label>Head size <span class="range">65–135</span></label>
-                                        <span class="tooltiptext">Simulates different head sizes affecting voice
-                                            resonance.
-                                            Lower values sound more child-like.</span>
-                                    </div>
-                                    <div id="headSizeDial"></div>
-                                </div>
-                            </div>
-                            <div class="span-3">
-                                <div class="field">
-                                    <div class="tooltip">
-                                        <label>Laryngealization <span class="range">0–100</span></label>
-                                        <span class="tooltiptext">Adds creaky or rough quality to the voice. Higher
-                                            values
-                                            create a more gravelly sound.</span>
-                                    </div>
-                                    <div id="laryngealizationDial"></div>
-                                </div>
-                            </div>
-                            <div class="span-3">
-                                <div class="field">
-                                    <div class="tooltip">
-                                        <label>Gain <span class="range">0–100</span></label>
-                                        <span class="tooltiptext">Controls the overall volume/amplitude of the voice
-                                            output.</span>
-                                    </div>
-                                    <div id="gainDial"></div>
-                                </div>
-                            </div>
-                        </div>
+      </div>
+    </section>
+    <section class="library-panel" aria-labelledby="libraryTitle">
+      <div class="library-head"><div><div class="library-title"><h2 id="libraryTitle">Slots</h2><span id="slotCount" class="hint">100 slots</span></div><div id="deviceSummary" class="device-summary">Connect Kraftor to read saved memory.</div></div><div class="toolbar" aria-label="Saved memory actions"><button id="reloadButton" class="btn" type="button" disabled>Reload memory</button><button id="referenceButton" class="btn" type="button" disabled>Print saved slots</button><button id="exportButton" class="btn" type="button" disabled>Export backup</button></div></div>
+      <details class="memory-tools"><summary>Backup and memory tools</summary><div class="button-row"><button id="importButton" class="btn" type="button">Import backup</button><button id="restoreButton" class="btn" type="button" disabled>Restore</button><button id="formatButton" class="btn danger" type="button" disabled>Format</button><input id="importFile" class="screen-reader-only" type="file" accept="application/json"></div></details>
+      <div id="notice" class="notice" role="status" aria-live="polite">Connect your Kraftor with a USB cable, then click Connect Kraftor.</div>
+      <div class="slot-table-wrap"><table aria-label="VAX sentence slots"><colgroup><col style="width:52px"><col style="width:76px"><col><col style="width:128px"><col style="width:84px"></colgroup><thead><tr><th>Slot</th><th>MIDI note</th><th>Sentence</th><th>Voice / rate</th><th>State</th></tr></thead><tbody id="slotRows"></tbody></table></div>
+    </section>
+  </main>
 
-                        <div class="span-12 tight-after-more">
-                            <div class="field">
-                                <div class="btn-row end">
-                                    <div class="tooltip">
-                                        <button id="randomBtn" class="btn primary" type="button">Random</button>
-                                        <span class="tooltiptext">Randomizes voice, rate, and all tuning parameters,
-                                            then applies them.</span>
-                                    </div>
-                                    <div class="tooltip">
-                                        <button id="resetBtn" class="btn secondary" type="button">Reset</button>
-                                        <span class="tooltiptext">Resets all voice parameters to their default
-                                            values.</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+  <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle">
+    <div class="help-head"><h2 id="helpTitle">Using VAX Designer</h2><button id="helpCloseButton" class="btn" type="button" autofocus>Close help</button></div>
+    <details class="help-topic" open><summary>Edit a sentence</summary><div class="help-topic-body"><ol><li>Connect Kraftor through USB using <strong>Connect Kraftor</strong>.</li><li>Select a slot on the right. Its sentence and voice settings appear on the left.</li><li>Type a sentence or use <strong>Bulk paste…</strong> for one sentence per line. The old <code>@one@two@three</code> format is also accepted in bulk paste.</li><li>Adjust the voice and sliders. <strong>Audition draft</strong> plays the unsaved settings. <strong>Save to Kraftor</strong> writes that slot to FRAM.</li></ol><p><strong>Play saved slot</strong> plays its stored profile. <strong>Reset voice settings</strong> restores the controls and speech rate 75 while keeping the sentence and selected voice.</p><p>You can select slots with the keyboard: Tab to a slot number, then use the arrow keys, Enter or Space.</p></div></details>
+    <details id="dectalkHelpTopic" class="help-topic"><summary>DECtalk native format: speech, phonetics and singing</summary><div class="help-topic-body">
+      <p>The Sentence box accepts real DECtalk commands and phonetics directly. Voice and slider settings are applied first; your native sentence follows unchanged. Type or paste these examples into the same <strong>Sentence</strong> box. Click <strong>Audition draft</strong> to listen, then <strong>Save to Kraftor</strong> to keep the phrase.</p>
+      <div class="native-example"><strong>Ordinary speech</strong><pre><code>Hello from Kraftor.</code></pre></div>
+      <p><code>[:command value]</code> changes a setting. <code>[phonemes]</code> spells sounds instead of words. Begin a phonetic phrase with <code>[:phoneme arpabet speak on]</code> to enable phoneme interpretation.</p>
+      <div class="native-example"><strong>Control a pronunciation</strong><pre><code>[:phoneme arpabet speak on]Say [r 'ow b aa t].</code></pre><p>The bracketed sounds say “robot”. The straight apostrophe marks primary stress. Close every bracket before returning to ordinary words.</p></div>
+      <div class="native-example"><strong>Add a half-second pause</strong><pre><code>[:phoneme arpabet speak on]Ready [_&lt;500&gt;] now.</code></pre><p><code>_</code> is silence; <code>&lt;500&gt;</code> lasts 500 milliseconds.</p></div>
+      <div class="native-example"><strong>Sing three notes on “ah”</strong><pre><code>[:phoneme arpabet speak on][aa&lt;500,25&gt; aa&lt;500,29&gt; aa&lt;1000,32&gt;]</code></pre><p><code>phoneme&lt;duration,pitch&gt;</code>: duration is milliseconds. Pitch numbers 1–37 select musical notes: 25 = C4, 29 = E4, 32 = G4. These are DECtalk tone numbers, separate from the MIDI note that triggers the slot.</p></div>
+      <div class="native-example"><strong>Change speed within a sentence</strong><pre><code>[:rate 100]Slow first. [:rate 180]Faster now.</code></pre><p><code>[:rate]</code> accepts 75–600 words per minute.</p></div>
+      <div class="native-example"><strong>Set an inline voice design</strong><pre><code>[:dv ap 90 pr 0]A steady robot voice.</code></pre><p><code>ap</code> sets average pitch in Hz; <code>pr 0</code> removes pitch variation. Keep <code>[:dv ...]</code> around inline design parameters; <code>ap 90 pr 0</code> alone is ordinary text. When using sliders, the Designer builds the design command for you.</p></div>
+      <p>The Designer applies the selected voice and sliders before your sentence. Inline commands come afterwards and can override those settings or live MIDI CCs; sliders do not display values embedded in your text. <strong>Reset voice settings</strong> keeps the sentence, so remove inline commands there to stop using them.</p>
+      <p>Commands and brackets count toward the 200-character sentence limit and the slot's byte budget. Use plain ASCII characters. <code>/r</code>, <code>/v</code> and <code>/d</code> belong in the legacy serial terminal; use <code>[:...]</code> here. Bulk paste accepts one complete native phrase per line. Serial audition also sends a complete native DECtalk phrase; the manual serial terminal keeps its older slash commands.</p>
+      <p><a href="https://www.polaxis.be/vax-serial-midi/" target="_blank" rel="noopener noreferrer">Polaxis VAX examples</a> · <a href="assets/EpsonDECtalk501.pdf" target="_blank" rel="noopener noreferrer">Fonix DECtalk 5.01 guide (PDF)</a> · <a href="https://www.polaxis.be/download/dectalk-user-guide/" target="_blank" rel="noopener noreferrer">Guide on Polaxis</a>: phonetic symbols p. 44, pitch/duration p. 56, tone table p. 57.</p>
+    </div></details>
+    <details class="help-topic"><summary>Drafts, saved memory and temporary RAM</summary><div class="help-topic-body"><p>Drafts live in this browser session until you save them. Saved FRAM slots survive a restart. Bulk paste loads drafts and keeps each destination's voice settings; it does not write memory automatically.</p><p>The bank holds 100 slots. Slots 0–91 are triggered by MIDI notes 36–127. Slots 92–99 play from the Designer only.</p><p>The separate legacy serial <code>@</code> parser holds at most 12 temporary RAM phrases. Those phrases disappear on restart and can override their matching MIDI notes while loaded. They are not the FRAM bank.</p><p>Sentences use ASCII text, up to 200 characters. Text and voice parameters together must fit the slot's 248-byte budget. Invalid bulk pastes are rejected as a whole.</p></div></details>
+    <details class="help-topic"><summary>MIDI channel and physical switches</summary><div class="help-topic-body"><p>The four physical switches select channels 1–16: all OFF is channel 1 and all ON is channel 16. The channel is the binary switch value plus one. Restart Kraftor after changing switches, then click <strong>Refresh</strong>. The on-screen switches are read-only.</p></div></details>
+    <details class="help-topic"><summary>MIDI CC controls — VAX firmware 1.3</summary><div class="help-topic-body"><p>Send these CCs on Kraftor's MIDI channel. They affect the next MIDI-note-triggered phrase, without changing saved memory. Designer sliders edit slot drafts independently.</p><table class="help-cc-table"><thead><tr><th>CC</th><th>Control</th><th>MIDI value</th><th>Result</th></tr></thead><tbody><tr><td>16</td><td>Voice</td><td>0–8</td><td>Paul, Harry, Betty, Ursula, Dennis, Kit, Frank, Rita, Wendy</td></tr><tr><td>17</td><td>Speech rate</td><td>0–127</td><td>75–600</td></tr><tr><td>18</td><td>Average pitch</td><td>0–127</td><td>50–500</td></tr><tr><td>19</td><td>Pitch range</td><td>0–127</td><td>0–250</td></tr><tr><td>20</td><td>Breathiness</td><td>0–127</td><td>0–70</td></tr><tr><td>21</td><td>Head size</td><td>0–127</td><td>65–135</td></tr><tr><td>22</td><td>Laryngealization</td><td>0–127</td><td>0–100</td></tr><tr><td>121</td><td>Reset live overrides</td><td>Any</td><td>Return to the phrase's stored/serial settings</td></tr></tbody></table><p>CC17–22 scale linearly over the shown ranges. CC16 values above 8 are ignored.</p></div></details>
+    <details class="help-topic"><summary>Print and backup</summary><div class="help-topic-body"><p><strong>Print saved slots</strong> rereads physical FRAM and prints only populated saved slots, with their exact stored sentence and voice profile. Drafts, temporary serial RAM phrases and live CC overrides are not included.</p><p><strong>Export backup</strong> exports the saved bank as JSON. Import first loads a backup locally; <strong>Restore</strong> writes it to Kraftor. <strong>Format</strong> erases the bank and asks for confirmation.</p><p>For earlier firmware or a serial terminal, open <strong>Older firmware / serial tools</strong> at the bottom of the editor.</p></div></details>
+  </dialog>
 
-                        <div class="span-12 tight-after-more">
-                            <div class="field compact-field">
-                                <h2 class="card-title">Command voice design</h2>
-                            </div>
-                        </div>
+  <dialog id="bulkPasteDialog" class="bulk-paste-dialog" aria-labelledby="bulkPasteTitle" aria-describedby="bulkPasteHelp">
+    <h2 id="bulkPasteTitle">Paste several sentences</h2>
+    <p id="bulkPasteLimits" class="field-help">100 sentence slots · up to 200 characters per sentence.</p>
+    <p id="bulkPasteHelp" class="field-help">One sentence per line, or use <span class="mono">@one@two@three</span>. Empty lines are ignored. Existing slot voice settings are kept; empty slots use your current voice settings.</p>
+    <label for="bulkPasteText">Sentences</label>
+    <textarea id="bulkPasteText" rows="6" placeholder="First sentence&#10;Second sentence&#10;Third sentence" autofocus></textarea>
+    <div class="bulk-paste-start"><label for="bulkPasteStart">Start at slot</label><input id="bulkPasteStart" type="number" min="0" max="99" value="0"></div>
+    <p id="bulkPasteSummary" class="bulk-paste-summary" aria-live="polite">Paste your sentences to preview the slots.</p>
+    <p id="bulkPasteError" class="bulk-paste-error" role="alert" hidden></p>
+    <ol id="bulkPastePreview" class="bulk-paste-preview" aria-label="Sentence destinations"></ol>
+    <p class="field-help">This loads editable drafts. Select each slot to adjust its voice, audition it, then save to Kraftor.</p>
+    <div class="button-row end"><button id="bulkPasteCancelButton" class="btn" type="button">Cancel</button><button id="bulkPasteLoadButton" class="btn primary" type="button" disabled>Load drafts</button></div>
+  </dialog>
 
-                        <div class="span-12 tight-after-more">
-                            <div class="field">
-                                <label>Designed voice command (editable)</label>
-                                <div class="btn-row">
-                                    <div class="tooltip">
-                                        <input id="designedCommand" type="text"
-                                            placeholder="Command will appear here" />
-                                        <span class="tooltiptext">This field auto-updates when you adjust the dials
-                                            above,
-                                            but you can also edit it manually. Use Apply to send the command or Reset to
-                                            restore defaults.</span>
-                                    </div>
-                                    <div class="tooltip">
-                                        <button id="applyDesignedBtn" class="btn primary" type="button">Apply</button>
-                                        <span class="tooltiptext">Sends the current command text to the device
-                                            immediately.</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+  <dialog id="referenceBackdrop" class="reference-backdrop" aria-labelledby="midiRefTitle">
+    <section id="midiRefPanel" class="midi-reference-sheet" aria-labelledby="midiRefTitle">
+      <div class="reference-actions no-print">
+        <button id="referenceRefreshButton" class="btn" type="button">Refresh from Kraftor</button>
+        <button id="referencePrintButton" class="btn primary" type="button">Print…</button>
+        <button id="referenceCloseButton" class="btn" type="button">Close sheet</button>
+      </div>
+      <div id="midiRefBody"></div>
+    </section>
+  </dialog>
 
-                        <div class="span-12 tight-after">
-                            <div class="field compact-field">
-                                <h2 class="card-title">Voice test</h2>
-                            </div>
-                        </div>
+  <script>
+    (() => {
+      'use strict';
 
-                        <div class="span-12">
-                            <div class="btn-row">
-                                <input id="speakText" type="text" placeholder="Type text to speak"
-                                    aria-label="Speak text" />
-                                <div class="tooltip">
-                                    <button id="speakBtn" class="btn primary" type="button">Speak</button>
-                                    <span class="tooltiptext">Speaks the text using the current voice settings and sends
-                                        it to the device.</span>
-                                </div>
-                            </div>
-                        </div>
+      const DEFAULT_SPEECH_RATE = 75;
+      const VOICES = ['Paul', 'Harry', 'Betty', 'Ursula', 'Dennis', 'Kit', 'Frank', 'Rita', 'Wendy'];
+      const DESIGN_CONTROLS = [
+        { id: 'ap', cc: 18, label: 'Average pitch', min: 50, max: 500, value: 112 },
+        { id: 'pr', cc: 19, label: 'Pitch range', min: 0, max: 250, value: 100 },
+        { id: 'br', cc: 20, label: 'Breathiness', min: 0, max: 70, value: 0 },
+        { id: 'hs', cc: 21, label: 'Head size', min: 65, max: 135, value: 100 },
+        { id: 'la', cc: 22, label: 'Laryngealization', min: 0, max: 100, value: 0 }
+      ];
+      const P = { manufacturer: 0x7d, k: 0x4b, v: 0x56, version: 1, chunk: 96 };
+      const C = { info: 0x01, get: 0x02, setBegin: 0x03, setData: 0x04, setCommit: 0x05, erase: 0x06, play: 0x07, format: 0x08, auditionBegin: 0x09, auditionData: 0x0a, auditionCommit: 0x0b, infoReply: 0x41, slotData: 0x42, ack: 0x7e, error: 0x7f };
+      const ERROR_NAMES = { 1: 'unknown command', 2: 'protocol version', 3: 'invalid length', 4: 'slot out of range', 5: 'FRAM not found', 6: 'FRAM is not formatted for VAX', 7: 'device busy', 8: 'transfer sequence', 9: 'checksum', 10: 'invalid VAX payload', 11: 'FRAM read', 12: 'FRAM write', 13: 'empty slot', 14: 'confirmation rejected' };
+      const DEFAULT_CAPS = { slots: 100, ready: false, maxPayload: 248, midiBase: 36, midiCount: 92, firmware: '1.3', profileVersion: 1, maxDesign: 96, maxText: 200, ccVersion: 0, midiChannel: null, dipBits: null };
 
-                        <div class="span-12 tight-after-more">
-                            <div class="field">
-                                <h2 class="card-title">Presets</h2>
-                                <div class="presets-grid">
-                                    <input id="presetName" type="text" placeholder="Preset name" />
-                                    <button id="presetSaveBtn" class="btn primary" type="button">Save</button>
-                                    <select id="presetList" aria-label="Saved presets"></select>
-                                    <div class="btn-row presets-actions">
-                                        <button id="presetDeleteBtn" class="btn danger" type="button">Delete</button>
-                                        <button id="presetExportBtn" class="btn" type="button">Export</button>
-                                        <input id="presetImportInput" type="file" accept="application/json"
-                                            style="display:none" />
-                                        <button id="presetImportBtn" class="btn" type="button">Import</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+      let midiAccess = null;
+      let midiOutput = null;
+      let midiInput = null;
+      let kraftorConnected = false;
+      let connecting = false;
+      let readingFram = false;
+      let serialPort = null;
+      let serialWriter = null;
+      let serialReader = null;
+      let serialReadTask = null;
+      let serialReadActive = false;
+      let transaction = 0;
+      let selectedSlot = 0;
+      let selectedVoice = 0;
+      let voiceDesign = '';
+      let caps = { ...DEFAULT_CAPS };
+      let slots = Array.from({ length: caps.slots }, () => ({ saved: null, draft: null, dirty: false, status: 'empty' }));
+      let importedBackup = null;
+      let referenceSnapshot = null;
+      let bulkPasteUndo = null;
+      const pending = new Map();
+      const enc = new TextEncoder();
+      const dec = new TextDecoder();
 
-                        <div class="span-12 tight-after">
-                            <div class="matrix-pads">
-                                <div class="field pads-field">
-                                    <div class="collapsible-header" id="midiPadsHeader">
-                                        <div class="collapsible-title-container">
-                                            <div class="tooltip">
-                                                <h2 class="card-title">MIDI notes pads</h2>
-                                                <span class="tooltiptext">
-                                                    Enter text for each MIDI notes. Use Update to store them in Kraftor.
-                                                    Click the pads to send MIDI notes (36-47).</span>
-                                            </div>
-                                            <button class="collapsible-toggle" id="midiPadsToggle" type="button"
-                                                aria-label="Toggle MIDI pads section">▼</button>
-                                        </div>
-                                    </div>
-                                    <div class="collapsible-content expanded" id="midiPadsContent">
-                                        <table class="matrix-table" id="matrixGrid">
-                                            <tbody>
-                                                <tr>
-                                                    <td><input type="text" id="m_0_0" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_36"></div>
-                                                        <div class="pad-label">36</div>
-                                                    </td>
-                                                    <td><input type="text" id="m_0_1" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_37"></div>
-                                                        <div class="pad-label">37</div>
-                                                    </td>
-                                                    <td><input type="text" id="m_0_2" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_38"></div>
-                                                        <div class="pad-label">38</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td><input type="text" id="m_1_0" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_39"></div>
-                                                        <div class="pad-label">39</div>
-                                                    </td>
-                                                    <td><input type="text" id="m_1_1" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_40"></div>
-                                                        <div class="pad-label">40</div>
-                                                    </td>
-                                                    <td><input type="text" id="m_1_2" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_41"></div>
-                                                        <div class="pad-label">41</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td><input type="text" id="m_2_0" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_42"></div>
-                                                        <div class="pad-label">42</div>
-                                                    </td>
-                                                    <td><input type="text" id="m_2_1" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_43"></div>
-                                                        <div class="pad-label">43</div>
-                                                    </td>
-                                                    <td><input type="text" id="m_2_2" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_44"></div>
-                                                        <div class="pad-label">44</div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td><input type="text" id="m_3_0" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_45"></div>
-                                                        <div class="pad-label">45</div>
-                                                    </td>
-                                                    <td><input type="text" id="m_3_1" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_46"></div>
-                                                        <div class="pad-label">46</div>
-                                                    </td>
-                                                    <td><input type="text" id="m_3_2" /></td>
-                                                    <td class="mx-cell">
-                                                        <div class="mx-btn" id="pad_47"></div>
-                                                        <div class="pad-label">47</div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <div class="btn-row end" style="margin-top: 16px;">
-                                            <div class="tooltip">
-                                                <button id="matrixUpdateBtn" class="btn primary"
-                                                    type="button">Update</button>
-                                                <span class="tooltiptext">Sends all text from the input fields as a
-                                                    single command to the device.</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      const $ = id => document.getElementById(id);
+      const clamp = (value, min, max) => Math.min(max, Math.max(min, Number(value)));
+      const write14 = value => [value & 0x7f, (value >> 7) & 0x7f];
+      const read14 = (bytes, offset = 0) => bytes[offset] | (bytes[offset + 1] << 7);
+      const write16 = value => [value & 0x7f, (value >> 7) & 0x7f, (value >> 14) & 0x03];
+      const read16 = (bytes, offset = 0) => bytes[offset] | (bytes[offset + 1] << 7) | ((bytes[offset + 2] & 0x03) << 14);
+      const nextTransaction = () => { transaction = transaction % 127 + 1; return transaction; };
 
-            <div class="right-column">
-                <div class="card brand-card" aria-label="Brand">
-                    <div class="card-body">
-                        <div class="brand-header">
-                            <div class="brand-title">Vax vox designer</div>
-                            <div class="tooltip-toggle-container">
-                                <div class="tooltip">
-                                    <button id="tooltipToggle" class="btn secondary" type="button"
-                                        aria-label="Toggle tooltips">
-                                        <span id="tooltipIcon">💡</span>
-                                    </button>
-                                    <span class="tooltiptext">Toggle tooltips on/off</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="muted">Version 1.0</div>
-                        <div class="muted"><a href="https://www.polaxis.be/" target="_blank"
-                                rel="noopener noreferrer">Polaxis</a></div>
-                    </div>
-                </div>
-                <aside class="card connection-card" aria-labelledby="serial-conn-title">
-                    <div class="card-header">
-                        <h3 id="serial-conn-title" class="card-title">Connections</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="field">
-                            <label>Serial port</label>
-                            <select id="serialPortSelect" aria-label="Serial port">
-                                <option>— Not connected —</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Status</label>
-                            <div><span id="serialStatusText" class="muted">Not connected</span><span
-                                    id="serialStatusBadge" class="badge">OFF</span></div>
-                        </div>
-                        <div class="btn-row">
-                            <button id="serialConnectBtn" class="btn primary" type="button">Connect</button>
-                            <button id="serialRefreshBtn" class="btn" type="button">Refresh</button>
-                        </div>
+      function crc16(bytes) {
+        let crc = 0xffff;
+        for (const byte of bytes) {
+          crc ^= byte << 8;
+          for (let bit = 0; bit < 8; bit++) crc = crc & 0x8000 ? ((crc << 1) ^ 0x1021) & 0xffff : (crc << 1) & 0xffff;
+        }
+        return crc;
+      }
 
-                        <div id="serialFirmwareRow" class="field" style="display:none; margin-top: 4px;">
-                            <label>Firmware Version</label>
-                            <div id="serialFirmware" class="muted">—</div>
-                        </div>
+      function setNotice(message, kind = '') {
+        const el = $('notice');
+        el.textContent = message;
+        el.className = `notice${kind ? ` ${kind}` : ''}`;
+      }
 
-                        <hr class="card-sep" />
-                        <div class="field">
-                            <label>MIDI Output</label>
-                            <select id="midiOutputSelect" aria-label="MIDI output">
-                                <option value="">— Not connected —</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Status</label>
-                            <div><span id="midiStatusText" class="muted">Not connected</span><span id="midiStatusBadge"
-                                    class="badge">OFF</span></div>
-                        </div>
-                        <div class="btn-row">
-                            <button id="midiConnectBtn" class="btn primary" type="button">Connect</button>
-                            <button id="midiRefreshBtn" class="btn" type="button">Refresh</button>
-                        </div>
-                    </div>
-                </aside>
-                <div class="card" aria-label="Serial incoming">
-                    <div class="card-header">
-                        <h3 class="card-title">Serial Monitoring</h3>
-                    </div>
-                    <div class="card-body">
-                        <pre id="serialIncoming" class="log-area"></pre>
-                    </div>
-                </div>
-            </div>
-        </section>
+      function asciiBytes(value, label) {
+        const bytes = Array.from(enc.encode(value));
+        if (bytes.some(byte => byte > 0x7f)) throw new Error(`${label} must contain ASCII characters only.`);
+        return bytes;
+      }
 
-    </main>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Collapsible Voice tuning
-            (function setupTuningCollapse() {
-                const header = document.getElementById('tuningHeader');
-                const toggle = document.getElementById('tuningToggleBtn');
-                const content = document.getElementById('tuningSection');
-                if (!header || !toggle || !content) return;
-                function toggleCollapse() {
-                    const isCollapsed = content.classList.contains('collapsed');
-                    if (isCollapsed) {
-                        content.classList.remove('collapsed');
-                        content.classList.add('expanded');
-                        toggle.textContent = '▼';
-                        toggle.classList.remove('collapsed');
-                    } else {
-                        content.classList.add('collapsed');
-                        content.classList.remove('expanded');
-                        toggle.textContent = '▶';
-                        toggle.classList.add('collapsed');
-                    }
-                }
-                header.addEventListener('click', (e) => {
-                    if ((e.target && e.target.id) === 'tuningToggleBtn') return;
-                    toggleCollapse();
-                });
-                toggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    toggleCollapse();
-                });
-                toggle.textContent = '▼';
-            })();
-            if (window.Nexus && Nexus.colors) {
-                Nexus.colors.accent = '#5ad1ff';
-                Nexus.colors.fill = 'rgba(255,255,255,0.06)';
-                Nexus.colors.dark = '#0b0d10';
-                Nexus.colors.light = '#e7eaf0';
-                Nexus.colors.medium = 'rgba(255,255,255,0.12)';
-            }
+      function normalizeDesign(value) {
+        const text = String(value || '').trim();
+        const wrapped = text.match(/^\[:dv\s*(.*?)\]\s*$/i);
+        return wrapped ? wrapped[1].trim() : text;
+      }
 
-            // Voice list (from Html.html)
-            const voices = ["Paul", "Harry", "Betty", "Ursula", "Dennis", "Kit", "Frank", "Rita", "Wendy"];
+      function currentProfile() {
+        return { voice: selectedVoice, rate: Number($('speechRateNumber').value), design: normalizeDesign(voiceDesign) };
+      }
 
-            // Voice radio (NexusUI) with spacing matched to legend width
-            function renderVoiceRadio() {
-                try {
-                    const container = document.getElementById('voiceRadio');
-                    const legendEl = document.getElementById('voiceLegend');
-                    if (!container) return;
-                    const parentWidth = container.parentElement ? container.parentElement.getBoundingClientRect().width : 0;
-                    const desired = Math.max(360, voices.length * 56);
-                    const width = parentWidth ? Math.min(Math.max(desired, parentWidth - 8), 1200) : desired;
-                    container.innerHTML = '';
-                    const radio = new Nexus.RadioButton('#voiceRadio', {
-                        size: [width, 28],
-                        numberOfButtons: voices.length,
-                        active: 0
-                    });
-                    // Store globally for reset access
-                    window.voiceRadio = radio;
-                    // Send serial command on selection: /v{index} + CRLF
-                    radio.on('change', function (value) {
-                        let idx = (typeof value === 'number') ? value : (value && (value.index ?? value.value));
-                        idx = (idx == null) ? 0 : (idx | 0);
-                        if (typeof window.sendSerialLine === 'function') {
-                            window.sendSerialLine(`/v${idx}`);
-                        }
-                    });
-                    if (legendEl) {
-                        legendEl.style.width = width + 'px';
-                        legendEl.innerHTML = voices.map(v => `<span>${v}</span>`).join('');
-                    }
-                } catch (e) {
-                    // Ignore if Nexus isn't loaded
-                }
-            }
-            renderVoiceRadio();
-            window.addEventListener('resize', renderVoiceRadio);
+      function buildPayload(profile, text) {
+        const design = asciiBytes(String(profile.design || '').trim(), 'Voice design command');
+        const sentence = asciiBytes(String(text || '').replace(/[\r\n]+/g, ' ').trim(), 'Sentence');
+        const rate = Number(profile.rate);
+        if (!Number.isInteger(profile.voice) || profile.voice < 0 || profile.voice >= VOICES.length) throw new Error('Voice is out of range.');
+        if (!Number.isInteger(rate) || rate < 75 || rate > 600) throw new Error('Speech rate must be between 75 and 600.');
+        if (design.length > caps.maxDesign) throw new Error(`Voice design is ${design.length} bytes; maximum is ${caps.maxDesign}.`);
+        if (!sentence.length) throw new Error('Sentence is empty.');
+        if (sentence.length > caps.maxText) throw new Error(`Sentence is ${sentence.length} bytes; maximum is ${caps.maxText}.`);
+        const bytes = [caps.profileVersion, profile.voice, ...write14(rate), design.length, ...write14(sentence.length), ...design, ...sentence];
+        if (bytes.length > caps.maxPayload) throw new Error(`Slot uses ${bytes.length} bytes; maximum is ${caps.maxPayload}. Shorten the sentence or voice design.`);
+        return bytes;
+      }
 
-            // Dials (NexusUI)
-            function makeDial(selector, min, max, value) {
-                try {
-                    return new Nexus.Dial(selector, {
-                        size: [90, 90],
-                        interaction: 'radial',
-                        mode: 'relative',
-                        min: min,
-                        max: max,
-                        step: 1,
-                        value: value
-                    });
-                } catch (e) {
-                    return null;
-                }
-            }
+      function decodePayload(bytes) {
+        if (!bytes.length) return null;
+        if (bytes.length < 7 || bytes[0] !== caps.profileVersion) throw new Error('Unsupported VAX slot payload.');
+        const voice = bytes[1];
+        const rate = read14(bytes, 2);
+        const designLength = bytes[4];
+        const textLength = read14(bytes, 5);
+        if (7 + designLength + textLength !== bytes.length) throw new Error('VAX slot length does not match its contents.');
+        return { voice, rate, design: dec.decode(new Uint8Array(bytes.slice(7, 7 + designLength))), text: dec.decode(new Uint8Array(bytes.slice(7 + designLength))) };
+      }
 
-            // Horizontal slider for Rate with auto-resize and grey background track
-            let rateSlider = null;
-            let rateDebounce = null;
-            let designedCommandSendDebounce = null;
-            let designedManualOverride = false;
-            function renderRateSlider() {
-                try {
-                    const host = document.getElementById('rateSlider');
-                    if (!host) return;
-                    const parentWidth = host.parentElement ? host.parentElement.getBoundingClientRect().width : 600;
-                    const width = Math.max(360, Math.min(parentWidth - 8, 1200));
-                    const currentValue = (rateSlider && typeof rateSlider.value === 'number') ? rateSlider.value : 200;
-                    host.innerHTML = '';
-                    rateSlider = new Nexus.Slider('#rateSlider', {
-                        size: [width, 28],
-                        mode: 'relative',
-                        min: 75,
-                        max: 600,
-                        step: 1,
-                        value: currentValue
-                    });
-                    try { rateSlider.colorize && rateSlider.colorize('fill', 'rgba(180,190,205,0.35)'); } catch { }
-                    rateSlider.on('change', function (v) {
-                        const val = Math.round(Number(v || 0));
-                        clearTimeout(rateDebounce);
-                        rateDebounce = setTimeout(() => {
-                            if (typeof window.sendSerialLine === 'function') {
-                                window.sendSerialLine(`/r${val}`);
-                            }
-                        }, 250);
-                    });
-                } catch { }
-            }
-            renderRateSlider();
-            window.addEventListener('resize', renderRateSlider);
-            const avgPitchDial = makeDial('#avgPitchDial', 50, 500, 112);
-            const pitchRateDial = makeDial('#pitchRateDial', 0, 100, 100);
-            const breathinessDial = makeDial('#breathinessDial', 0, 70, 0);
-            const headSizeDial = makeDial('#headSizeDial', 65, 135, 100);
-            const laryngealizationDial = makeDial('#laryngealizationDial', 0, 100, 0);
-            const gainDial = makeDial('#gainDial', 0, 100, 100);
+      function sendFrame(command, tx, payload = []) {
+        if (!midiOutput) throw new Error('Connect Polaxis Kraftor VAX first.');
+        midiOutput.send([0xf0, P.manufacturer, P.k, P.v, P.version, command, tx, ...payload, 0xf7]);
+      }
 
-            let designedInputEditing = false;
-            function updateDesignedCommand() {
-                if (designedManualOverride) return;
-                const parts = [];
-                // rate is a separate setting; exclude from designed command
-                try { if (avgPitchDial) parts.push('ap ' + Math.round(Number(avgPitchDial.value || 0))); } catch { }
-                try { if (pitchRateDial) parts.push('pr ' + Math.round(Number(pitchRateDial.value || 0))); } catch { }
-                try { if (breathinessDial) parts.push('br ' + Math.round(Number(breathinessDial.value || 0))); } catch { }
-                try { if (headSizeDial) parts.push('hs ' + Math.round(Number(headSizeDial.value || 0))); } catch { }
-                try { if (laryngealizationDial) parts.push('la ' + Math.round(Number(laryngealizationDial.value || 0))); } catch { }
-                try { if (gainDial) parts.push('g5 ' + Math.round(Number(gainDial.value || 0))); } catch { }
-                const input = document.getElementById('designedCommand');
-                const cmdString = parts.join(' ');
-                if (input && !designedInputEditing) input.value = cmdString;
-                // Debounced send of designed command: /d <string>
-                try {
-                    if (designedInputEditing) return; // don't auto-send while user is editing
-                    clearTimeout(designedCommandSendDebounce);
-                    designedCommandSendDebounce = setTimeout(() => {
-                        if (typeof window.sendSerialLine === 'function' && cmdString) {
-                            window.sendSerialLine('/d ' + cmdString);
-                        }
-                    }, 250);
-                } catch { }
-            }
-
-            // Pause auto-update while editing designed command; resume on blur
-            (function attachDesignedInputHandlers() {
-                const input = document.getElementById('designedCommand');
-                if (!input) return;
-                input.addEventListener('focus', () => { designedInputEditing = true; });
-                input.addEventListener('blur', () => { designedInputEditing = false; /* keep manual text until dial moves */ });
-                document.getElementById('applyDesignedBtn')?.addEventListener('click', async () => {
-                    const text = (input.value || '').trim().replace(/\s+/g, ' ');
-                    if (!text) return;
-                    designedManualOverride = true;
-                    if (typeof window.sendSerialLine === 'function') {
-                        await window.sendSerialLine('/d ' + text);
-                    }
-                });
-            })();
-
-            // Update command on dial changes
-            // rate is separate so we don't include it in the designed command; listener attached in renderRateSlider
-            try { avgPitchDial && avgPitchDial.on('change', () => { designedManualOverride = false; updateDesignedCommand(); }); } catch { }
-            try { pitchRateDial && pitchRateDial.on('change', () => { designedManualOverride = false; updateDesignedCommand(); }); } catch { }
-            try { breathinessDial && breathinessDial.on('change', () => { designedManualOverride = false; updateDesignedCommand(); }); } catch { }
-            try { headSizeDial && headSizeDial.on('change', () => { designedManualOverride = false; updateDesignedCommand(); }); } catch { }
-            try { laryngealizationDial && laryngealizationDial.on('change', () => { designedManualOverride = false; updateDesignedCommand(); }); } catch { }
-            try { gainDial && gainDial.on('change', () => { designedManualOverride = false; updateDesignedCommand(); }); } catch { }
-
-            // Initialize with defaults
-            updateDesignedCommand();
-            // Lightweight notifications (toasts)
-            function notify(message, level = 'info') {
-                try {
-                    let container = document.getElementById('toastContainer');
-                    if (!container) {
-                        container = document.createElement('div');
-                        container.id = 'toastContainer';
-                        container.style.position = 'fixed';
-                        container.style.left = '50%';
-                        container.style.transform = 'translateX(-50%)';
-                        container.style.bottom = '18px';
-                        container.style.display = 'flex';
-                        container.style.flexDirection = 'column';
-                        container.style.gap = '8px';
-                        container.style.zIndex = '2147483647';
-                        container.style.pointerEvents = 'none';
-                        document.body.appendChild(container);
-                    }
-                    const toast = document.createElement('div');
-                    toast.textContent = String(message || '');
-                    toast.style.pointerEvents = 'auto';
-                    toast.style.padding = '10px 12px';
-                    toast.style.borderRadius = '8px';
-                    toast.style.border = '1px solid var(--border)';
-                    toast.style.boxShadow = 'var(--shadow)';
-                    toast.style.fontSize = '13px';
-                    toast.style.maxWidth = '72vw';
-                    toast.style.textAlign = 'center';
-                    toast.style.margin = '0 auto';
-                    // Color by level
-                    if (level === 'success') { toast.style.background = '#21d694'; toast.style.color = '#062d1e'; toast.style.borderColor = '#14b67a'; }
-                    else if (level === 'warning') { toast.style.background = '#ffed88'; toast.style.color = '#3b2a00'; toast.style.borderColor = '#e6cf4a'; }
-                    else if (level === 'error') { toast.style.background = '#ff6b6b'; toast.style.color = '#2b0a0a'; toast.style.borderColor = '#ff5252'; }
-                    else { toast.style.background = 'rgba(0,0,0,0.75)'; toast.style.color = '#ffffff'; toast.style.borderColor = 'rgba(255,255,255,0.2)'; }
-                    container.appendChild(toast);
-                    setTimeout(() => { try { container.removeChild(toast); } catch { } }, 2200);
-                    toast.addEventListener('click', () => { try { container.removeChild(toast); } catch { } });
-                } catch { }
-            }
-            // ===== Presets storage helpers =====
-            const PRESET_KEY = 'vax.presets.v1';
-            function loadPresets() {
-                try { const raw = localStorage.getItem(PRESET_KEY); return raw ? JSON.parse(raw) : []; } catch { return []; }
-            }
-            function savePresets(list) {
-                try { localStorage.setItem(PRESET_KEY, JSON.stringify(list)); } catch { }
-            }
-            function makePresetId() { return 'p_' + Math.random().toString(36).slice(2, 10); }
-            function currentCmdString() {
-                const input = document.getElementById('designedCommand');
-                return (input?.value || '').trim();
-            }
-            function refreshPresetList(selectedId) {
-                const sel = document.getElementById('presetList'); if (!sel) return;
-                const presets = loadPresets();
-                sel.innerHTML = '';
-                presets.forEach(p => { const opt = document.createElement('option'); opt.value = p.id; opt.textContent = p.name || p.id; opt.title = p.cmd; sel.appendChild(opt); });
-                if (selectedId) sel.value = selectedId;
-            }
-            refreshPresetList();
-
-            async function applyPresetById(id) {
-                const list = loadPresets();
-                const p = list.find(x => x.id === id);
-                if (!p) return;
-                // Apply voice first, then rate
-                try {
-                    const voiceNum = Math.max(0, Number.isFinite(Number(p.voice)) ? (Number(p.voice) | 0) : 0);
-                    // Update UI radio selection
-                    try {
-                        if (window.voiceRadio) {
-                            if (window.voiceRadio.select) { window.voiceRadio.select(voiceNum); } else { window.voiceRadio.active = voiceNum; }
-                        } else {
-                            const voiceRadioEl = document.querySelector('#voiceRadio');
-                            if (voiceRadioEl && voiceRadioEl.nexus) {
-                                if (voiceRadioEl.nexus.select) { voiceRadioEl.nexus.select(voiceNum); } else { voiceRadioEl.nexus.active = voiceNum; }
-                            }
-                        }
-                    } catch { }
-                    if (window.sendSerialLine) await window.sendSerialLine('/v' + voiceNum);
-                } catch { }
-                // Apply rate next
-                try {
-                    if (rateSlider) {
-                        const r = Math.round(Number(p.rate));
-                        const validRate = Number.isFinite(r) && r >= 75 && r <= 600 ? r : 200; // default for legacy imports
-                        rateSlider.value = validRate;
-                        if (window.sendSerialLine) await window.sendSerialLine('/r' + validRate);
-                    }
-                } catch { }
-                // Apply designed command text, update dials in UI silently, then send
-                const input = document.getElementById('designedCommand'); if (input) input.value = p.cmd || '';
-                // Suppress auto-send while applying dial values
-                let prevEditing = designedInputEditing;
-                designedInputEditing = true;
-                try {
-                    const tokens = String(p.cmd || '').trim().split(/\s+/);
-                    for (let i = 0; i < tokens.length - 1; i += 2) {
-                        const key = tokens[i];
-                        const val = Math.round(Number(tokens[i + 1]));
-                        if (!Number.isFinite(val)) continue;
-                        try { if (key === 'ap' && avgPitchDial) avgPitchDial.value = val; } catch { }
-                        try { if (key === 'pr' && pitchRateDial) pitchRateDial.value = val; } catch { }
-                        try { if (key === 'br' && breathinessDial) breathinessDial.value = val; } catch { }
-                        try { if (key === 'hs' && headSizeDial) headSizeDial.value = val; } catch { }
-                        try { if (key === 'la' && laryngealizationDial) laryngealizationDial.value = val; } catch { }
-                        try { if (key === 'g5' && gainDial) gainDial.value = val; } catch { }
-                    }
-                } catch { }
-                // Resume normal behavior shortly after
-                setTimeout(() => { try { designedInputEditing = prevEditing; } catch { } }, 200);
-                designedManualOverride = true; // lock until a dial moves
-                if (window.sendSerialLine && p.cmd) await window.sendSerialLine('/d ' + p.cmd);
-                try { notify(`Loaded preset “${(p.name || 'Preset')}”`, 'success'); } catch { }
-            }
-
-            // ===== Presets actions =====
-            document.getElementById('presetSaveBtn')?.addEventListener('click', () => {
-                const nameRaw = (document.getElementById('presetName')?.value || '').trim();
-                const cmd = currentCmdString();
-                const rateVal = (() => { try { return Math.round(Number(rateSlider?.value || 0)); } catch { return 0; } })();
-                const voiceVal = (() => { try { return ((window.voiceRadio?.active ?? 0) | 0); } catch { return 0; } })();
-                if (!cmd) return;
-                const list = loadPresets();
-                const sel = document.getElementById('presetList');
-                const selectedId = sel ? sel.value : '';
-
-                // Helper: normalize name for comparison
-                const norm = (s) => (s || '').trim().toLowerCase();
-
-                // Case 1: specific name entered → overwrite by name if exists, else create new with that name
-                if (nameRaw) {
-                    const idx = list.findIndex(p => norm(p.name) === norm(nameRaw));
-                    if (idx >= 0) {
-                        const keepId = list[idx].id;
-                        list[idx] = { ...list[idx], name: list[idx].name, cmd, rate: rateVal, voice: voiceVal, updatedAt: Date.now() };
-                        savePresets(list); refreshPresetList(keepId);
-                        notify(`Updated preset “${list[idx].name}”`, 'success');
-                        return;
-                    }
-                    const id = makePresetId();
-                    list.push({ id, name: nameRaw, cmd, rate: rateVal, voice: voiceVal, createdAt: Date.now() });
-                    savePresets(list); refreshPresetList(id);
-                    notify(`Saved “${nameRaw}”`, 'success');
-                    return;
-                }
-
-                // Case 2: no name entered
-                // If a preset is selected → overwrite that one; otherwise ask for a name
-                if (selectedId) {
-                    const idx = list.findIndex(p => p.id === selectedId);
-                    if (idx >= 0) {
-                        list[idx] = { ...list[idx], cmd, rate: rateVal, voice: voiceVal, updatedAt: Date.now() };
-                        savePresets(list); refreshPresetList(selectedId);
-                        notify(`Updated preset “${list[idx].name || 'Preset'}”`, 'success');
-                        return;
-                    }
-                }
-
-                // No name and none selected: prompt for a name and bail if not provided
-                const prompted = (window.prompt && window.prompt('Preset name?') || '').trim();
-                if (!prompted) { notify('Please enter a preset name to save.', 'warning'); return; }
-                const idx = list.findIndex(p => norm(p.name) === norm(prompted));
-                if (idx >= 0) {
-                    const keepId = list[idx].id;
-                    list[idx] = { ...list[idx], name: list[idx].name, cmd, rate: rateVal, voice: voiceVal, updatedAt: Date.now() };
-                    savePresets(list); refreshPresetList(keepId);
-                    notify(`Updated preset “${list[idx].name}”`, 'success');
-                } else {
-                    const id = makePresetId();
-                    list.push({ id, name: prompted, cmd, rate: rateVal, voice: voiceVal, createdAt: Date.now() });
-                    savePresets(list); refreshPresetList(id);
-                    notify(`Saved “${prompted}”`, 'success');
-                }
-            });
-
-            document.getElementById('presetApplyBtn')?.addEventListener('click', async () => {
-                const sel = document.getElementById('presetList'); if (!sel) return; const id = sel.value; if (!id) return;
-                await applyPresetById(id);
-            });
-
-            // Apply immediately when a preset is selected
-            document.getElementById('presetList')?.addEventListener('change', async (e) => {
-                const id = e.target.value; if (!id) return;
-                await applyPresetById(id);
-            });
-
-            document.getElementById('presetDeleteBtn')?.addEventListener('click', () => {
-                const sel = document.getElementById('presetList'); if (!sel) return; const id = sel.value; if (!id) return;
-                const listAll = loadPresets();
-                const toDelete = listAll.find(p => p.id === id);
-                const list = listAll.filter(x => x.id !== id); savePresets(list); refreshPresetList();
-                try { notify(`Deleted preset “${toDelete?.name || 'Preset'}”`, 'success'); } catch { }
-            });
-
-            document.getElementById('presetExportBtn')?.addEventListener('click', () => {
-                const presets = loadPresets();
-                const data = JSON.stringify(presets, null, 2);
-                const blob = new Blob([data], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a'); a.href = url; a.download = 'vax-presets.json'; a.click();
-                setTimeout(() => URL.revokeObjectURL(url), 0);
-                try { notify(`Exported ${presets.length} preset${presets.length === 1 ? '' : 's'}.`, 'success'); } catch { }
-            });
-
-            document.getElementById('presetImportBtn')?.addEventListener('click', () => {
-                document.getElementById('presetImportInput')?.click();
-            });
-            document.getElementById('presetImportInput')?.addEventListener('change', async (e) => {
-                try {
-                    const file = e.target.files && e.target.files[0]; if (!file) return;
-                    const text = await file.text(); const incoming = JSON.parse(text);
-                    const importedArray = Array.isArray(incoming) ? incoming : (Array.isArray(incoming?.presets) ? incoming.presets : null);
-                    if (!importedArray) { try { notify('Import failed: file has no presets array.', 'error'); } catch { } e.target.value = ''; return; }
-                    const existing = loadPresets();
-                    const beforeCount = existing.length;
-                    // Merge by name+cmd uniqueness; create new ids
-                    const merged = [...existing];
-                    let added = 0;
-                    importedArray.forEach(p => {
-                        const name = (p?.name || '').trim(); const cmd = (p?.cmd || '').trim();
-                        if (!cmd) return;
-                        const dup = merged.find(x => (x.name || '') === name && (x.cmd || '') === cmd);
-                        // Default rate to 200 for legacy files missing 'rate'
-                        const rateNum = Math.round(Number(p?.rate));
-                        const rate = Number.isFinite(rateNum) && rateNum >= 75 && rateNum <= 600 ? rateNum : 200;
-                        const voiceNum = Math.max(0, Number.isFinite(Number(p?.voice)) ? (Number(p.voice) | 0) : 0);
-                        if (!dup) { merged.push({ id: makePresetId(), name: name || 'Preset', cmd, rate, voice: voiceNum, createdAt: Date.now() }); added++; }
-                    });
-                    savePresets(merged);
-                    // If previously empty and we imported any, select and apply the first imported preset
-                    if (beforeCount === 0 && merged.length > 0) {
-                        const firstId = merged[0].id;
-                        refreshPresetList(firstId);
-                        await applyPresetById(firstId);
-                        try { notify(`Imported ${added} preset${added === 1 ? '' : 's'} and loaded “${merged[0].name || 'Preset'}”.`, 'success'); } catch { }
-                    } else {
-                        refreshPresetList();
-                        try { if (added > 0) notify(`Imported ${added} preset${added === 1 ? '' : 's'}.`, 'success'); else notify('No new presets to import (all duplicates).', 'warning'); } catch { }
-                    }
-                    try { e.target.value = ''; } catch { }
-                } catch { }
-            });
-            // Reset button: set default values
-            document.getElementById('resetBtn')?.addEventListener('click', () => {
-                try {
-                    if (rateSlider) {
-                        rateSlider.value = 200;
-                        try {
-                            if (typeof window.sendSerialLine === 'function') {
-                                window.sendSerialLine('/r200');
-                                setTimeout(() => { try { window.sendSerialLine('/o'); } catch { } }, 200);
-                            }
-                        } catch { }
-                    }
-                } catch { }
-                try { if (avgPitchDial) avgPitchDial.value = 112; } catch { }
-                try { if (pitchRateDial) pitchRateDial.value = 100; } catch { }
-                try { if (breathinessDial) breathinessDial.value = 0; } catch { }
-                try { if (headSizeDial) headSizeDial.value = 100; } catch { }
-                try { if (laryngealizationDial) laryngealizationDial.value = 0; } catch { }
-                try { if (gainDial) gainDial.value = 100; } catch { }
-                // Reset voice radio to index 0 (default)
-                try {
-                    if (window.voiceRadio) {
-                        if (window.voiceRadio.select) {
-                            window.voiceRadio.select(0);
-                        } else {
-                            window.voiceRadio.active = 0;
-                        }
-                    } else {
-                        const voiceRadioEl = document.querySelector('#voiceRadio');
-                        if (voiceRadioEl && voiceRadioEl.nexus) {
-                            if (voiceRadioEl.nexus.select) {
-                                voiceRadioEl.nexus.select(0);
-                            } else {
-                                voiceRadioEl.nexus.active = 0;
-                            }
-                        }
-                    }
-                } catch { }
-                designedManualOverride = false;
-                updateDesignedCommand();
-            });
-            // Random button: randomize voice, rate, and all dials, then apply designed command
-            document.getElementById('randomBtn')?.addEventListener('click', async () => {
-                const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-                // Random voice
-                try {
-                    const voiceIdx = randInt(0, Math.max(0, (voices?.length || 1) - 1));
-                    try {
-                        if (window.voiceRadio) {
-                            if (window.voiceRadio.select) { window.voiceRadio.select(voiceIdx); } else { window.voiceRadio.active = voiceIdx; }
-                        } else {
-                            const voiceRadioEl = document.querySelector('#voiceRadio');
-                            if (voiceRadioEl && voiceRadioEl.nexus) {
-                                if (voiceRadioEl.nexus.select) { voiceRadioEl.nexus.select(voiceIdx); } else { voiceRadioEl.nexus.active = voiceIdx; }
-                            }
-                        }
-                    } catch { }
-                    try { if (window.sendSerialLine) await window.sendSerialLine('/v' + voiceIdx); } catch { }
-                } catch { }
-                // Random rate (75..600)
-                try {
-                    const r = randInt(75, 600);
-                    try { if (rateSlider) rateSlider.value = r; } catch { }
-                    try { if (window.sendSerialLine) await window.sendSerialLine('/r' + r); } catch { }
-                } catch { }
-                // Randomize dials; suppress auto-send during setup
-                const prevEditing = designedInputEditing;
-                designedInputEditing = true;
-                try { if (avgPitchDial) avgPitchDial.value = randInt(50, 500); } catch { }
-                try { if (pitchRateDial) pitchRateDial.value = randInt(0, 100); } catch { }
-                try { if (breathinessDial) breathinessDial.value = randInt(0, 70); } catch { }
-                try { if (headSizeDial) headSizeDial.value = randInt(65, 135); } catch { }
-                try { if (laryngealizationDial) laryngealizationDial.value = randInt(0, 100); } catch { }
-                try { if (gainDial) gainDial.value = randInt(0, 100); } catch { }
-                designedManualOverride = false;
-                designedInputEditing = prevEditing;
-                // Rebuild designed command string and send via debounced mechanism
-                try { updateDesignedCommand(); } catch { }
-            });
-            // Matrix row buttons
-            try {
-                for (let r = 0; r < 4; r++) {
-                    for (let c = 0; c < 3; c++) {
-                        const id = `#mx_btn_${r}_${c}`;
-                        const host = document.querySelector(id);
-                        if (host) {
-                            new Nexus.Button(id, { size: [36, 36], mode: 'button' });
-                        }
-                    }
-                }
-            } catch (e) { /* ignore */ }
-
-            // Rate slider change handling is set in renderRateSlider
-
-            // Collapsible MIDI pads functionality
-            function initCollapsibleMidiPads() {
-                const header = document.getElementById('midiPadsHeader');
-                const toggle = document.getElementById('midiPadsToggle');
-                const content = document.getElementById('midiPadsContent');
-
-                if (!header || !toggle || !content) return;
-
-                function toggleCollapse() {
-                    const isCollapsed = content.classList.contains('collapsed');
-
-                    if (isCollapsed) {
-                        content.classList.remove('collapsed');
-                        content.classList.add('expanded');
-                        toggle.textContent = '▼';
-                        toggle.classList.remove('collapsed');
-                    } else {
-                        content.classList.remove('expanded');
-                        content.classList.add('collapsed');
-                        toggle.textContent = '▶';
-                        toggle.classList.add('collapsed');
-                    }
-                }
-
-                // Add click handlers
-                header.addEventListener('click', toggleCollapse);
-                toggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    toggleCollapse();
-                });
-
-                // Initialize as expanded by default
-                content.classList.add('expanded');
-                toggle.textContent = '▼';
-            }
-
-            // Initialize collapsible functionality
-            initCollapsibleMidiPads();
-
-            // Tooltip toggle functionality
-            function initTooltipToggle() {
-                const toggle = document.getElementById('tooltipToggle');
-                const icon = document.getElementById('tooltipIcon');
-                const body = document.body;
-
-                if (!toggle || !icon) return;
-
-                // Load saved state from localStorage
-                const tooltipsEnabled = localStorage.getItem('vax.tooltips.enabled') !== 'false';
-                updateTooltipState(tooltipsEnabled);
-
-                toggle.addEventListener('click', () => {
-                    const currentlyEnabled = !body.classList.contains('tooltips-disabled');
-                    const newState = !currentlyEnabled;
-                    updateTooltipState(newState);
-                    localStorage.setItem('vax.tooltips.enabled', newState.toString());
-                });
-
-                function updateTooltipState(enabled) {
-                    if (enabled) {
-                        body.classList.remove('tooltips-disabled');
-                        toggle.classList.add('active');
-                        icon.textContent = '💡';
-                        toggle.setAttribute('aria-pressed', 'true');
-                    } else {
-                        body.classList.add('tooltips-disabled');
-                        toggle.classList.remove('active');
-                        icon.textContent = '💤';
-                        toggle.setAttribute('aria-pressed', 'false');
-                    }
-                }
-            }
-
-            // Initialize tooltip toggle
-            initTooltipToggle();
-
-            // Remove JS positioning; rely on CSS-only for stable placement above labels
+      function waitFor(tx, kind, command, timeoutMs = 6000) {
+        return new Promise((resolve, reject) => {
+          const entry = { kind, command, resolve, reject, chunks: [] };
+          entry.timer = setTimeout(() => { pending.delete(tx); reject(new Error('Kraftor did not reply. Check the USB connection. For earlier firmware, open Older firmware / serial tools.')); }, timeoutMs);
+          pending.set(tx, entry);
         });
-    </script>
-    <script>
-        // Web Serial: choose a serial port, connect, send Speak text with CRLF
-        (function () {
-            let serialPort = null;
-            let serialWriter = null;
-            let serialDecoder = null;
-            let serialReader = null;
-            let serialReadableClosed = null;
-            let firmwareCaptureActive = false;
-            let firmwareCandidate = '';
+      }
 
-            function requestFirmwareAfter(delayMs) {
-                try {
-                    firmwareCaptureActive = true;
-                    firmwareCandidate = '';
-                    const row = document.getElementById('serialFirmwareRow');
-                    const el = document.getElementById('serialFirmware');
-                    if (row && el) { row.style.display = ''; el.textContent = ''; }
-                    setTimeout(() => {
-                        try {
-                            // Log explicitly for debugging
-                            const pre = document.getElementById('serialIncoming');
-                            if (pre) { pre.textContent += '>> /f (auto)\r\n'; pre.scrollTop = pre.scrollHeight; }
-                            window.sendSerialLine && window.sendSerialLine('/f');
-                        } catch { }
-                    }, Math.max(0, Number(delayMs || 0)));
-                } catch { }
-            }
-            function requestFirmwareSequence() {
-                // First attempt shortly after connect, then a backup a bit later
-                requestFirmwareAfter(800);
-                setTimeout(() => {
-                    // If nothing captured yet (no candidate and capture not active), try again
-                    const hasText = (document.getElementById('serialFirmware')?.textContent || '').trim().length > 0;
-                    if (!firmwareCaptureActive && !hasText) {
-                        requestFirmwareAfter(2000);
-                    }
-                }, 2200);
-            }
+      async function sendAndWaitAck(tx, command, payload = [], timeoutMs = 6000) {
+        const reply = waitFor(tx, 'ack', command, timeoutMs);
+        sendFrame(command, tx, payload);
+        return reply;
+      }
 
-            const supportsSerial = 'serial' in navigator;
-            let rememberedPorts = [];
+      async function requestInfo() {
+        const tx = nextTransaction();
+        const reply = waitFor(tx, 'info', C.info);
+        sendFrame(C.info, tx);
+        return reply;
+      }
 
-            function formatProductId(info) {
-                const d = info && info.usbProductId;
-                return (d != null) ? String(d) : '';
-            }
+      async function requestSlot(slot) {
+        const tx = nextTransaction();
+        const reply = waitFor(tx, 'slot', C.get, 9000);
+        sendFrame(C.get, tx, [slot]);
+        return reply;
+      }
 
-            function formatVidPid(info) {
-                const v = info && info.usbVendorId;
-                const d = info && info.usbProductId;
-                if (v != null && d != null) {
-                    const toHex = n => n.toString(16).padStart(4, '0').toUpperCase();
-                    return `USB ${toHex(v)}:${toHex(d)}`;
-                }
-                return '';
-            }
+      async function sendPayload(beginCommand, dataCommand, commitCommand, payload, slot = null) {
+        const tx = nextTransaction();
+        const chunks = Math.ceil(payload.length / P.chunk);
+        const checksum = crc16(payload);
+        const begin = slot == null ? [...write14(payload.length), chunks, ...write16(checksum)] : [slot, ...write14(payload.length), chunks, ...write16(checksum)];
+        await sendAndWaitAck(tx, beginCommand, begin);
+        for (let chunk = 0; chunk < chunks; chunk++) {
+          const data = payload.slice(chunk * P.chunk, (chunk + 1) * P.chunk);
+          await sendAndWaitAck(tx, dataCommand, slot == null ? [chunk, ...data] : [slot, chunk, ...data]);
+        }
+        await sendAndWaitAck(tx, commitCommand, slot == null ? [] : [slot], 12000);
+      }
 
-            async function tryGetUsbProductName(vendorId, productId) {
-                try {
-                    if (!('usb' in navigator)) return null;
-                    const devices = await navigator.usb.getDevices(); // only already-authorized devices
-                    const dev = devices.find(d => d.vendorId === vendorId && d.productId === productId);
-                    return dev ? (dev.productName || null) : null;
-                } catch { return null; }
-            }
+      async function saveSlotToDevice(slot, model) {
+        const payload = buildPayload(model, model.text);
+        await sendPayload(C.setBegin, C.setData, C.setCommit, payload, slot);
+        return decodePayload(payload);
+      }
 
-            // Resolve a human-readable device name similar to Echo.html
-            async function resolveDeviceName(p) {
-                try {
-                    if (!p || !p.getInfo) return '';
-                    const info = p.getInfo();
-                    const fallback = formatVidPid(info) || formatProductId(info) || '';
-                    if (navigator.usb && info && info.usbVendorId != null) {
-                        const vid = info.usbVendorId; const pid = info.usbProductId;
-                        const devices = await navigator.usb.getDevices();
-                        let device = devices.find(d => d.vendorId === vid && (pid == null || d.productId === pid));
-                        if (!device) {
-                            try {
-                                const filters = [{ vendorId: vid }];
-                                if (pid != null) filters[0].productId = pid;
-                                device = await navigator.usb.requestDevice({ filters });
-                            } catch { return fallback; }
-                        }
-                        const name = [device.manufacturerName, device.productName].filter(Boolean).join(' ');
-                        return name || fallback;
-                    }
-                    return fallback;
-                } catch { return ''; }
-            }
+      async function audition(profile, text) {
+        const payload = buildPayload(profile, text);
+        await sendPayload(C.auditionBegin, C.auditionData, C.auditionCommit, payload);
+      }
 
-            async function listRememberedPorts() {
-                try {
-                    rememberedPorts = await navigator.serial.getPorts();
-                    const sel = document.getElementById('serialPortSelect');
-                    if (!sel) return;
-                    const current = sel.value;
-                    sel.innerHTML = '<option value="">— Not connected —</option>';
-                    rememberedPorts.forEach((p, idx) => {
-                        const opt = document.createElement('option');
-                        opt.value = String(idx);
-                        const info = p.getInfo ? p.getInfo() : undefined;
-                        const label = formatProductId(info) || formatVidPid(info) || `Port ${idx}`;
-                        opt.textContent = label;
-                        opt.title = label;
-                        opt.dataset.index = String(idx);
-                        sel.appendChild(opt);
+      function handleMidiMessage(event) {
+        const data = Array.from(event.data || []);
+        if (data.length < 8 || data[0] !== 0xf0 || data.at(-1) !== 0xf7 || data[1] !== P.manufacturer || data[2] !== P.k || data[3] !== P.v) return;
+        const command = data[5];
+        const tx = data[6] & 0x7f;
+        const payload = data.slice(7, -1);
+        const entry = pending.get(tx);
+        if (!entry) return;
 
-                        // Asynchronously resolve to human-readable name (may prompt once for permission)
-                        (async () => {
-                            try {
-                                const name = await resolveDeviceName(p);
-                                if (name) { opt.textContent = name; opt.title = name; }
-                            } catch { }
-                        })();
-                    });
-                    if (current) sel.value = current;
-                } catch { }
-            }
+        if (command === C.error) {
+          clearTimeout(entry.timer); pending.delete(tx);
+          entry.reject(new Error(ERROR_NAMES[payload[1]] || `device error ${payload[1]}`));
+          return;
+        }
+        if (command === C.ack && entry.kind === 'ack' && payload[0] === entry.command) {
+          clearTimeout(entry.timer); pending.delete(tx); entry.resolve(payload[1]); return;
+        }
+        if (command === C.infoReply && entry.kind === 'info') {
+          clearTimeout(entry.timer); pending.delete(tx);
+          entry.resolve({ slots: payload[0], ready: payload[1] === 1, maxPayload: read14(payload, 2), midiBase: payload[4], midiCount: payload[5], firmware: `${payload[6]}.${payload[7]}`, profileVersion: payload[8], maxDesign: payload[9], maxText: read14(payload, 10), ccVersion: payload[12] || 0, midiChannel: payload[13] >= 1 && payload[13] <= 16 ? payload[13] : null, dipBits: payload[14] >= 0 && payload[14] <= 15 ? payload[14] : null });
+          return;
+        }
+        if (command === C.slotData && entry.kind === 'slot') {
+          const chunk = payload[1], chunkCount = payload[2], length = read14(payload, 3), checksum = read16(payload, 5), dataLength = payload[8];
+          if (payload.length !== 9 + dataLength) return;
+          entry.chunks[chunk] = payload.slice(9);
+          entry.chunkCount = chunkCount; entry.length = length; entry.checksum = checksum;
+          if (entry.chunks.filter(Boolean).length === chunkCount) {
+            clearTimeout(entry.timer); pending.delete(tx);
+            const bytes = entry.chunks.flat().slice(0, length);
+            if (bytes.length !== length || crc16(bytes) !== checksum) entry.reject(new Error('Slot checksum or length mismatch.'));
+            else entry.resolve(bytes);
+          }
+        }
+      }
 
-            async function requestAndConnect() {
-                try {
-                    serialPort = await navigator.serial.requestPort();
-                    await serialPort.open({ baudRate: 115200 });
-                    serialWriter = serialPort.writable?.getWriter() || null;
-                    await listRememberedPorts();
-                    updateSerialUi();
-                    // While still within the user gesture, try to resolve and show a friendly device name
-                    try {
-                        const name = await resolveDeviceName(serialPort);
-                        if (name) {
-                            const sel = document.getElementById('serialPortSelect');
-                            const text = document.getElementById('serialStatusText');
-                            if (text) text.textContent = 'Connected to ' + name;
-                            if (sel) {
-                                const idx = (sel.value && sel.value !== '') ? Number(sel.value) : -1;
-                                if (idx >= 0 && sel.options[idx + 1]) { sel.options[idx + 1].textContent = name; sel.options[idx + 1].title = name; }
-                                let cur = sel.querySelector('option[value="current"]');
-                                if (cur) { cur.textContent = name; cur.title = name; }
-                            }
-                        }
-                    } catch { }
-                    appendSerialLog('<< CONNECTED\r\n');
-                    // Start reader once and request firmware after a short delay
-                    await startSerialReader();
-                    requestFirmwareSequence();
-                } catch { }
-            }
+      function matchingInput(output) {
+        const inputs = Array.from(midiAccess.inputs.values()).filter(port => port.state === 'connected');
+        return inputs.find(port => port.name === output.name && port.manufacturer === output.manufacturer) || inputs.find(port => port.name === output.name) || inputs.find(port => output.name && port.name && (port.name.includes(output.name) || output.name.includes(port.name)));
+      }
 
-            async function disconnectSerial() {
-                try {
-                    if (serialReader) { try { await serialReader.cancel(); } catch { } try { serialReader.releaseLock(); } catch { } serialReader = null; }
-                    if (serialReadableClosed) { try { await serialReadableClosed.catch(() => { }); } catch { } serialReadableClosed = null; }
-                    serialDecoder = null;
-                    if (serialWriter) { serialWriter.releaseLock(); serialWriter = null; }
-                    if (serialPort) { await serialPort.close(); }
-                } catch { }
-                serialPort = null;
-                updateSerialUi();
-            }
+      async function ensureMidiAccess() {
+        if (!navigator.requestMIDIAccess) throw new Error('This browser cannot connect to Kraftor. Open VAX Designer in Chrome or Edge.');
+        if (!midiAccess) {
+          try {
+            midiAccess = await navigator.requestMIDIAccess({ sysex: true });
+          } catch (error) {
+            if (error.name === 'NotAllowedError' || error.name === 'SecurityError') throw new Error('Allow MIDI device access in your browser to connect Kraftor, then try again.');
+            throw error;
+          }
+          midiAccess.onstatechange = () => {
+            if ((midiOutput && midiOutput.state !== 'connected') || (midiInput && midiInput.state !== 'connected')) disconnectMidi();
+            populateMidiOutputs();
+          };
+        }
+        populateMidiOutputs();
+        return midiAccess;
+      }
 
-            function updateSerialUi() {
-                const btn = document.getElementById('serialConnectBtn');
-                const text = document.getElementById('serialStatusText');
-                const badge = document.getElementById('serialStatusBadge');
-                const sel = document.getElementById('serialPortSelect');
-                const connected = Boolean(serialPort && serialPort.readable && serialPort.writable);
-                if (btn) btn.textContent = connected ? 'Disconnect' : 'Connect';
-                if (text) text.textContent = connected ? 'Connected' : 'Not connected';
-                if (badge) {
-                    badge.textContent = connected ? 'ON' : 'OFF';
-                    badge.classList.toggle('connected', connected);
-                }
-                if (sel) {
-                    // Try to select the connected port in the dropdown
-                    sel.disabled = connected;
-                    if (connected) {
-                        const idx = rememberedPorts.findIndex(p => p === serialPort);
-                        if (idx >= 0) {
-                            sel.value = String(idx);
-                            // Upgrade label to resolved human-readable name (manufacturer + product)
-                            resolveDeviceName(serialPort).then(name => {
-                                if (!name) return;
-                                const opt = sel.options[idx + 1]; // +1 due to placeholder
-                                if (opt) { opt.textContent = name; opt.title = name; }
-                            });
-                        } else {
-                            // Add a temporary "Current" option if the port isn't in the list yet
-                            let cur = sel.querySelector('option[value="current"]');
-                            if (!cur) {
-                                cur = document.createElement('option');
-                                cur.value = 'current';
-                                const info = serialPort.getInfo ? serialPort.getInfo() : undefined;
-                                let label = formatProductId(info) || formatVidPid(info) || 'Current port';
-                                cur.textContent = label;
-                                cur.title = label;
-                                sel.appendChild(cur);
+      function kraftorOutputs() {
+        return Array.from(midiAccess.outputs.values()).filter(port => port.state === 'connected' && /kraftor|vax/i.test(`${port.manufacturer || ''} ${port.name || ''}`));
+      }
 
-                                resolveDeviceName(serialPort).then(name => {
-                                    if (name) { cur.textContent = name; cur.title = name; }
-                                });
-                            }
-                            sel.value = 'current';
-                        }
-                    } else {
-                        // When disconnected, reset to placeholder
-                        sel.value = '';
-                    }
-                }
+      function populateMidiOutputs() {
+        if (!midiAccess) return;
+        const select = $('midiOutput');
+        const previous = select.value || localStorage.getItem('vax.midi.output') || '';
+        const outputs = kraftorOutputs();
+        select.innerHTML = '<option value="">Choose your Kraftor…</option>';
+        outputs.forEach(output => {
+          const option = document.createElement('option');
+          option.value = output.id; option.textContent = output.name || 'Kraftor';
+          select.appendChild(option);
+        });
+        if (outputs.some(output => output.id === previous)) select.value = previous;
+        else if (outputs.length === 1) select.value = outputs[0].id;
+        select.hidden = outputs.length <= 1;
+      }
 
-                // Keep status concise; dropdown already shows device name
-            }
+      async function connectMidi() {
+        await ensureMidiAccess();
+        const select = $('midiOutput');
+        const outputs = kraftorOutputs();
+        if (!outputs.length) throw new Error('Kraftor was not found. Check its USB cable and power, then try again.');
+        const output = outputs.find(port => port.id === select.value);
+        if (!output) { select.focus(); throw new Error('More than one Kraftor is connected. Choose yours, then click Connect Kraftor.'); }
+        const input = matchingInput(output);
+        if (!input) throw new Error('Kraftor cannot send replies. Reconnect its USB cable and try again.');
+        midiOutput = output; midiInput = input; midiInput.onmidimessage = handleMidiMessage;
+        const info = await requestInfo();
+        if (!midiOutput || !midiInput) throw new Error('Kraftor was disconnected.');
+        caps = { ...DEFAULT_CAPS, ...info };
+        kraftorConnected = true;
+        localStorage.setItem('vax.midi.output', output.id);
+        resetSlots(caps.slots || DEFAULT_CAPS.slots, true);
+        updateConnectionUi();
+        if (caps.ready) await reloadFram();
+        else if (!caps.slots) setNotice('Kraftor connected. Memory not detected. You can edit voices and audition drafts; saving requires a memory module.');
+        else setNotice('Kraftor connected. Memory needs formatting before saving. You can audition drafts now. Format erases the memory.');
+      }
 
-            async function sendSerialLine(line) {
-                if (!serialWriter) return;
-                const encoder = new TextEncoder();
-                const data = encoder.encode(line + '\r\n');
-                try {
-                    await serialWriter.write(data);
-                    appendSerialLog(`>> ${line}\r\n`);
-                    // If user requests firmware manually, start a capture window
-                    if (String(line).trim() === '/f') {
-                        firmwareCaptureActive = true;
-                        firmwareCandidate = '';
-                        const row = document.getElementById('serialFirmwareRow');
-                        const el = document.getElementById('serialFirmware');
-                        if (row && el) { row.style.display = ''; el.textContent = fw || el.textContent || ''; }
-                    }
-                } catch { }
-            }
-            // Expose for other scripts (voice radio)
-            window.sendSerialLine = sendSerialLine;
+      function disconnectMidi() {
+        if (midiInput) midiInput.onmidimessage = null;
+        pending.forEach(entry => { clearTimeout(entry.timer); entry.reject(new Error('Kraftor disconnected.')); }); pending.clear();
+        kraftorConnected = false;
+        midiInput = null; midiOutput = null; caps.ready = false;
+        updateConnectionUi(); renderSlots();
+        setNotice('Kraftor disconnected. Connect Kraftor to continue.');
+      }
 
-            function appendSerialLog(text) {
-                const pre = document.getElementById('serialIncoming');
-                if (!pre) return;
-                pre.textContent += text;
-                pre.scrollTop = pre.scrollHeight;
-            }
+      function appendSerialLog(text) {
+        const log = $('serialLog');
+        if (log.textContent === 'Serial output will appear here.') log.textContent = '';
+        log.textContent += text;
+        log.scrollTop = log.scrollHeight;
+      }
 
-            async function startSerialReader() {
-                try {
-                    if (!serialPort || !serialPort.readable || serialReader) return;
-                    // Prefer TextDecoderStream, fall back to manual decode
-                    if ('TextDecoderStream' in window) {
-                        serialDecoder = new TextDecoderStream();
-                        serialReadableClosed = serialPort.readable.pipeTo(serialDecoder.writable);
-                        serialReader = serialDecoder.readable.getReader();
-                    } else {
-                        serialDecoder = null;
-                        serialReadableClosed = null;
-                        serialReader = serialPort.readable.getReader();
-                    }
-                    appendSerialLog('<< READER READY\r\n');
-                    // Kick an immediate firmware request once the reader is ready (in addition to the later retry)
-                    try { requestFirmwareAfter(0); } catch { }
-                    let buffer = '';
-                    let lastLine = '';
-                    const byteDecoder = (!serialDecoder && typeof TextDecoder !== 'undefined') ? new TextDecoder() : null;
-                    while (true) {
-                        const { value, done } = await serialReader.read();
-                        if (done) break;
-                        if (value) {
-                            const chunk = (typeof value === 'string') ? value : (byteDecoder ? byteDecoder.decode(value) : '');
-                            if (!chunk) continue;
-                            appendSerialLog(chunk);
-                            buffer += chunk;
-                            while (true) {
-                                const idx = buffer.search(/[\r\n]/);
-                                if (idx === -1) break;
-                                const line = buffer.slice(0, idx);
-                                let skip = 1;
-                                if (buffer[idx] === '\r' && buffer[idx + 1] === '\n') skip = 2;
-                                buffer = buffer.slice(idx + skip);
-                                const trimmed = line.trim();
-                                if (firmwareCaptureActive) {
-                                    if (trimmed.indexOf('$') !== -1) {
-                                        const fw = (firmwareCandidate || '').trim();
-                                        const row = document.getElementById('serialFirmwareRow');
-                                        const el = document.getElementById('serialFirmware');
-                                        if (row && el) { row.style.display = ''; el.textContent = fw || el.textContent || ''; }
-                                        firmwareCaptureActive = false;
-                                        firmwareCandidate = '';
-                                    } else if (trimmed && trimmed !== '/f') {
-                                        firmwareCandidate = trimmed;
-                                        const row = document.getElementById('serialFirmwareRow');
-                                        const el = document.getElementById('serialFirmware');
-                                        if (row && el) { row.style.display = ''; el.textContent = firmwareCandidate; }
-                                    }
-                                }
-                                if (trimmed.length) lastLine = trimmed;
-                            }
-                        }
-                    }
-                } catch { }
-            }
+      async function startSerialReader() {
+        if (!serialPort?.readable || serialReader) return;
+        serialReadActive = true;
+        serialReader = serialPort.readable.getReader();
+        try {
+          while (serialReadActive) {
+            const { value, done } = await serialReader.read();
+            if (done) break;
+            if (value?.length) appendSerialLog(dec.decode(value, { stream: true }));
+          }
+        } catch (error) {
+          if (serialReadActive) appendSerialLog(`\n[Serial read stopped: ${error.message}]\n`);
+        } finally {
+          try { serialReader.releaseLock(); } catch (_) {}
+          serialReader = null;
+        }
+      }
 
-            // Hook Speak button
-            document.getElementById('speakBtn')?.addEventListener('click', async () => {
-                const input = document.getElementById('speakText');
-                const value = input ? String(input.value || '').trim() : '';
-                if (value) await sendSerialLine(value);
-            });
+      async function connectSerial() {
+        if (!('serial' in navigator)) throw new Error('This browser does not support Web Serial. Use Chrome or a normal serial terminal.');
+        if (kraftorConnected) disconnectMidi();
+        serialPort = await navigator.serial.requestPort();
+        await serialPort.open({ baudRate: 115200 });
+        serialWriter = serialPort.writable.getWriter();
+        appendSerialLog('\n[Connected at 115200 baud]\n');
+        serialReadTask = startSerialReader();
+        updateConnectionUi();
+        setNotice('Serial connected. Edit voices, audition drafts, or use the terminal below. For memory management, disconnect and use Connect Kraftor with current firmware.', 'success');
+      }
 
-            // Hook Update button: concatenate matrix texts with '@' and send
-            document.getElementById('matrixUpdateBtn')?.addEventListener('click', async () => {
-                const inputs = Array.from(document.querySelectorAll('#matrixGrid input[type="text"]'));
-                const parts = inputs
-                    .map(el => (el && typeof el.value === 'string') ? el.value.trim() : '')
-                    .filter(v => v.length > 0);
-                const payload = parts.length ? ('@' + parts.join('@')) : '';
-                if (payload.length > 0) await sendSerialLine(payload);
-            });
+      async function disconnectSerial() {
+        serialReadActive = false;
+        if (serialReader) {
+          try { await serialReader.cancel(); } catch (_) {}
+        }
+        if (serialReadTask) {
+          try { await serialReadTask; } catch (_) {}
+          serialReadTask = null;
+        }
+        if (serialWriter) {
+          try { serialWriter.releaseLock(); } catch (_) {}
+          serialWriter = null;
+        }
+        if (serialPort) {
+          try { await serialPort.close(); } catch (_) {}
+          serialPort = null;
+        }
+        updateConnectionUi();
+        setNotice('Serial disconnected. Use Connect Kraftor for the current firmware, or reconnect serial for earlier firmware.');
+      }
 
-            // UI buttons
-            document.getElementById('serialRefreshBtn')?.addEventListener('click', async () => {
-                if (!supportsSerial) return;
-                await listRememberedPorts();
-            });
-            document.getElementById('serialConnectBtn')?.addEventListener('click', async () => {
-                if (!supportsSerial) return;
-                if (serialPort && serialPort.readable && serialPort.writable) {
-                    await disconnectSerial();
-                } else {
-                    await requestAndConnect();
-                }
-            });
+      async function sendSerialLine(line, terminator = '\r\n') {
+        const value = String(line || '').trim();
+        if (!serialWriter) throw new Error('Connect Web Serial first.');
+        if (!value) throw new Error('Serial command is empty.');
+        await serialWriter.write(enc.encode(`${value}${terminator}`));
+        appendSerialLog(`>> ${value}\n`);
+      }
 
-            if (supportsSerial) {
-                listRememberedPorts();
-                navigator.serial.addEventListener?.('connect', listRememberedPorts);
-                navigator.serial.addEventListener?.('disconnect', listRememberedPorts);
-            } else {
-                const text = document.getElementById('serialStatusText');
-                if (text) text.textContent = 'Web Serial not supported';
-            }
-            updateSerialUi();
-        })();
-    </script>
-    <script>
-        // Web MIDI: outputs, connect, refresh, and send notes on pad press
-        (function () {
-            let midiAccess = null;
-            let midiOutput = null;
+      function nativeDectalkPhrase(profile, text) {
+        // Validate against the same slot limits used by USB MIDI audition/save.
+        const validated = decodePayload(buildPayload(profile, text));
+        const design = validated.design ? `[:dv ${validated.design}]` : '';
+        return `[:n${validated.voice}][:rate ${validated.rate}]${design}${validated.text}`;
+      }
 
-            function populateOutputs() {
-                const sel = document.getElementById('midiOutputSelect');
-                if (!sel || !midiAccess) return;
-                const current = sel.value;
-                sel.innerHTML = '<option value="">— Not connected —</option>';
-                midiAccess.outputs.forEach(output => {
-                    const opt = document.createElement('option');
-                    opt.value = output.id;
-                    opt.textContent = output.name || `Output ${output.id}`;
-                    sel.appendChild(opt);
-                });
-                if (current) sel.value = current;
-            }
+      async function auditionSerial(profile, text) {
+        // A single CR ends the phrase without an empty line repeating it.
+        await sendSerialLine(nativeDectalkPhrase(profile, text), '\r');
+      }
 
-            function setOutputById(id) {
-                midiOutput = null;
-                if (!midiAccess || !id) return;
-                const out = midiAccess.outputs.get(id);
-                if (out) midiOutput = out;
-                updateMidiUi();
-            }
+      function updateConnectionUi() {
+        const serialConnected = Boolean(serialPort && serialWriter);
+        const connected = kraftorConnected;
+        const anyConnected = connected || serialConnected;
+        $('connectionDot').classList.toggle('connected', anyConnected);
+        $('connectionStatus').textContent = connected ? 'Kraftor connected' : serialConnected ? 'Kraftor connected · serial' : connecting ? 'Connecting…' : 'Kraftor disconnected';
+        $('connectButton').textContent = connecting ? 'Connecting…' : anyConnected ? 'Disconnect Kraftor' : 'Connect Kraftor';
+        $('connectButton').disabled = connecting;
+        $('bulkPasteButton').disabled = connecting || readingFram;
+        $('midiOutput').disabled = anyConnected || connecting;
+        $('serialConnectButton').textContent = serialConnected ? 'Disconnect serial' : 'Connect serial';
+        $('serialConnectButton').disabled = connecting;
+        $('serialSendButton').disabled = !serialConnected;
+        $('reloadButton').disabled = !(connected && caps.ready && !readingFram);
+        $('referenceButton').disabled = !(connected && caps.ready && !readingFram);
+        $('referenceRefreshButton').disabled = !(connected && caps.ready && !readingFram);
+        $('referencePrintButton').disabled = readingFram;
+        $('exportButton').disabled = !(connected && caps.ready && !readingFram);
+        $('restoreButton').disabled = !(connected && caps.ready && importedBackup && !readingFram);
+        $('formatButton').disabled = !(connected && caps.slots > 0 && !readingFram);
+        updateSlotActionButtons();
+        updateMidiControlUi();
+        if (connected) {
+          const memoryStatus = !caps.slots ? 'Memory not detected' : caps.ready ? `Memory available · ${caps.slots} slots` : 'Memory needs formatting';
+          $('deviceSummary').textContent = memoryStatus;
+        } else if (serialConnected) $('deviceSummary').textContent = 'Voice editing available. Memory management requires the main Kraftor connection and current firmware.';
+        else $('deviceSummary').textContent = 'Connect Kraftor to view its memory.';
+      }
 
-            function sendNoteOn(note, velocity = 100, channel = 0) {
-                if (!midiOutput) return;
-                const status = 0x90 | (channel & 0x0f);
-                midiOutput.send([status, note & 0x7f, velocity & 0x7f]);
-            }
+      function updateMidiControlUi() {
+        const supported = kraftorConnected && caps.ccVersion === 1;
+        $('midiControlHint').hidden = !kraftorConnected || supported;
+        document.querySelectorAll('.cc-badge').forEach(badge => {
+          badge.classList.toggle('unavailable', kraftorConnected && !supported);
+          badge.title = `CC ${badge.dataset.cc}: ${badge.dataset.range}.${kraftorConnected && !supported ? ' Not supported by the connected firmware.' : ''}`;
+        });
+        $('midiControlHint').textContent = supported ? 'Send these CCs on the MIDI channel shown above for the next MIDI-triggered phrase. CC121 restores stored voice settings.' : kraftorConnected ? 'The connected firmware does not report CC support. Install the updated VAX firmware to use CC16–22.' : 'CC16–22 are available in VAX firmware 1.3. CC121 clears live overrides.';
+        $('midiStatusRefreshButton').disabled = !kraftorConnected;
+        $('midiChannelStatus').textContent = kraftorConnected && caps.midiChannel != null ? `MIDI channel ${caps.midiChannel}` : kraftorConnected ? 'Channel not reported' : 'Connect to read channel';
+        const known = kraftorConnected && caps.dipBits != null;
+        $('dipHousing').classList.toggle('unknown', !known);
+        const switches = [];
+        for (let index = 0; index < 4; index++) {
+          const on = known && Boolean(caps.dipBits & (8 >> index));
+          $(`dipSwitch${index + 1}`).className = `dip-track ${known ? on ? 'on' : 'off' : 'unknown'}`;
+          switches.push(`${index + 1} ${known ? on ? 'ON' : 'OFF' : 'unknown'}`);
+        }
+        $('dipHousing').setAttribute('aria-label', `Physical DIP switches: ${switches.join(', ')}. Read only.`);
+        $('midiSwitchHelp').textContent = known ? caps.dipBits + 1 !== caps.midiChannel ? `Switches now select channel ${caps.dipBits + 1}. Restart Kraftor to apply it, then Refresh.` : 'Physical switch positions. Restart Kraftor after changing them, then Refresh.' : 'The four switches set channel 1–16. Read from Kraftor through the main connection.';
+      }
 
-            function sendNoteOff(note, velocity = 64, channel = 0) {
-                if (!midiOutput) return;
-                const status = 0x80 | (channel & 0x0f);
-                midiOutput.send([status, note & 0x7f, velocity & 0x7f]);
-            }
+      function updateSlotActionButtons() {
+        const state = slots[selectedSlot];
+        const librarianReady = kraftorConnected && caps.ready && !readingFram;
+        $('auditionButton').disabled = !((kraftorConnected || serialWriter) && !readingFram && state?.draft?.text?.trim());
+        $('playSlotButton').disabled = !(librarianReady && state?.saved);
+        $('saveSlotButton').disabled = !(librarianReady && state?.draft?.text?.trim());
+        $('eraseSlotButton').disabled = !(librarianReady && state?.saved);
+      }
 
-            // Request MIDI access
-            if (navigator.requestMIDIAccess) {
-                navigator.requestMIDIAccess({ sysex: false }).then(access => {
-                    midiAccess = access;
-                    populateOutputs();
-                    midiAccess.onstatechange = populateOutputs;
-                }).catch(() => {
-                    // ignore failure for now
-                });
-            }
+      function renderVoiceGrid() {
+        const grid = $('voiceGrid'); grid.innerHTML = '';
+        VOICES.forEach((voice, index) => {
+          const button = document.createElement('button');
+          button.type = 'button'; button.className = `voice-option${index === selectedVoice ? ' selected' : ''}`; button.textContent = voice;
+          button.setAttribute('role', 'radio'); button.setAttribute('aria-checked', String(index === selectedVoice));
+          button.addEventListener('click', () => { selectedVoice = index; renderVoiceGrid(); updateDraftFromEditor(); });
+          grid.appendChild(button);
+        });
+        $('voiceValue').textContent = VOICES[selectedVoice];
+      }
 
-            // UI handlers
-            document.getElementById('midiRefreshBtn')?.addEventListener('click', populateOutputs);
-            document.getElementById('midiConnectBtn')?.addEventListener('click', () => {
-                const sel = document.getElementById('midiOutputSelect');
-                const had = Boolean(midiOutput);
-                if (had) { midiOutput = null; } else { setOutputById(sel ? sel.value : ''); }
-                updateMidiUi();
-            });
-            document.getElementById('midiOutputSelect')?.addEventListener('change', (e) => {
-                const id = e.target.value;
-                setOutputById(id);
-            });
+      function renderDesignControls() {
+        const host = $('designControls'); host.innerHTML = '';
+        DESIGN_CONTROLS.forEach(control => {
+          const row = document.createElement('div'); row.className = 'slider-row';
+          row.innerHTML = `<label for="control-${control.id}">${control.label}<span class="cc-badge" data-cc="${control.cc}" data-range="0–127 → ${control.min}–${control.max}">CC ${control.cc}</span></label><input id="control-${control.id}" type="range" min="${control.min}" max="${control.max}" value="${control.value}"><span id="value-${control.id}" class="slider-value">${control.value}</span>`;
+          host.appendChild(row);
+          row.querySelector('input[type="range"]').addEventListener('input', event => { $(`value-${control.id}`).textContent = event.target.value; updateDesignFromControls(); });
+        });
+      }
 
-            function updateMidiUi() {
-                const btn = document.getElementById('midiConnectBtn');
-                const text = document.getElementById('midiStatusText');
-                const badge = document.getElementById('midiStatusBadge');
-                const outSel = document.getElementById('midiOutputSelect');
-                const connected = Boolean(midiOutput);
-                if (btn) btn.textContent = connected ? 'Disconnect' : 'Connect';
-                if (text) text.textContent = connected ? (midiOutput?.name || 'Connected') : 'Not connected';
-                if (badge) {
-                    badge.textContent = connected ? 'ON' : 'OFF';
-                    badge.classList.toggle('connected', connected);
-                }
-                if (outSel && connected) outSel.value = midiOutput.id || outSel.value;
-            }
-            updateMidiUi();
+      function updateDesignFromControls() {
+        const controls = new Map(DESIGN_CONTROLS.map(control => [control.id, control]));
+        const parts = normalizeDesign(voiceDesign).split(/\s+/).filter(Boolean);
+        const seen = new Set();
+        const merged = [];
+        for (let index = 0; index < parts.length; index += 2) {
+          const key = parts[index];
+          if (index + 1 >= parts.length) { merged.push(key); break; }
+          const control = controls.get(key.toLowerCase());
+          if (control) {
+            merged.push(control.id, $(`control-${control.id}`).value);
+            seen.add(control.id);
+          } else merged.push(key, parts[index + 1]);
+        }
+        DESIGN_CONTROLS.forEach(control => { if (!seen.has(control.id)) merged.push(control.id, $(`control-${control.id}`).value); });
+        const design = merged.join(' ');
+        voiceDesign = design;
+        updateDraftFromEditor();
+      }
 
-            // Hook MIDI pads to send notes 36..47
-            document.addEventListener('DOMContentLoaded', function () {
-                const START = 36;
-                // Temporarily set a light fill so pad centers appear prefilled
-                let prevFill = null;
-                try { prevFill = Nexus.colors.fill; Nexus.colors.fill = 'rgba(180,190,205,0.35)'; } catch (e) { }
-                for (let n = START; n < START + 12; n++) {
-                    const id = `pad_${n}`;
-                    const node = document.getElementById(id);
-                    if (!node) continue;
-                    try {
-                        // Initialize as button if not yet
-                        if (!node.querySelector('canvas')) {
-                            const btn = new Nexus.Button(`#${id}`, { size: [36, 36], mode: 'button' });
-                            btn.on('change', (v) => { if (v) window.sendMidiNote?.(n); });
-                        }
-                        // If already present, attempt to attach handler via nx.widgets registry if available
-                    } catch (e) { /* ignore */ }
-                }
-                // Restore previous fill for other widgets
-                try { if (prevFill !== null) Nexus.colors.fill = prevFill; } catch (e) { }
-            });
+      function applyDesignToControls(design) {
+        const pairs = normalizeDesign(design).split(/\s+/);
+        const values = {};
+        for (let index = 0; index + 1 < pairs.length; index += 2) values[pairs[index].toLowerCase()] = Number(pairs[index + 1]);
+        DESIGN_CONTROLS.forEach(control => {
+          $(`control-${control.id}`).value = Number.isFinite(values[control.id]) ? clamp(values[control.id], control.min, control.max) : control.value;
+          $(`value-${control.id}`).textContent = $(`control-${control.id}`).value;
+        });
+      }
 
-            // Delegate change events from Nexus buttons to MIDI send
-            document.addEventListener('change', (evt) => {
-                const target = evt.target;
-                if (!(target && target.id && target.id.startsWith('pad_'))) return;
-                const note = parseInt(target.id.split('_')[1], 10);
-                if (Number.isInteger(note)) {
-                    // Send short note on and off
-                    sendNoteOn(note, 100, 0);
-                    setTimeout(() => sendNoteOff(note, 64, 0), 120);
-                }
-            }, true);
+      function resetDesign() {
+        setEditorProfile({ voice: selectedVoice, rate: DEFAULT_SPEECH_RATE, design: '' });
+        updateDraftFromEditor();
+        setNotice('Voice settings reset. Speech rate is 75. Your sentence is unchanged; audition it before saving.');
+      }
 
-            // Global helper and custom event to send notes from other scripts
-            window.sendMidiNote = function (note, velocity = 100, channel = 0, durationMs = 120) {
-                sendNoteOn(note, velocity, channel);
-                setTimeout(() => sendNoteOff(note, 64, channel), durationMs);
-            };
-            document.addEventListener('nx-pad-press', (e) => {
-                const note = e?.detail?.note;
-                if (typeof note === 'number') window.sendMidiNote(note);
-            });
-        })();
-    </script>
-    <script>
-        (function () {
-            const voices = ["Paul", "Harry", "Betty", "Ursula", "Dennis", "Kit", "Frank", "Rita", "Wendy"];
-            const legend = document.getElementById('voiceLegendSide');
-            if (legend) {
-                legend.style.setProperty('--voice-count', String(voices.length));
-                legend.innerHTML = voices.map(v => `<span>${v}</span>`).join('');
-            }
-        })();
-    </script>
-    <script>
-        // Buttons now live inside the matrix table as pad_36..pad_47
-    </script>
+      function setEditorProfile(profile) {
+        selectedVoice = clamp(profile.voice ?? 0, 0, VOICES.length - 1);
+        const rate = clamp(profile.rate ?? DEFAULT_SPEECH_RATE, 75, 600);
+        $('speechRate').value = rate; $('speechRateNumber').value = rate;
+        voiceDesign = normalizeDesign(profile.design || '');
+        applyDesignToControls(voiceDesign); renderVoiceGrid();
+      }
+
+      function profileSummary(profile) { return `${VOICES[profile.voice] || `Voice ${profile.voice}`} / ${profile.rate}`; }
+      function modelForSelected() { return { ...currentProfile(), text: $('slotSentence').value }; }
+
+      function resetSlots(count, preserveDrafts = false) {
+        clearBulkPasteUndo();
+        const previous = preserveDrafts ? slots : [];
+        slots = Array.from({ length: count }, (_, slot) => ({ saved: null, draft: previous[slot]?.dirty ? { ...previous[slot].draft } : null, dirty: Boolean(previous[slot]?.dirty), status: 'empty' }));
+        selectedSlot = Math.min(selectedSlot, count - 1); renderSlots(); selectSlot(selectedSlot);
+      }
+
+      function renderSlots() {
+        const body = $('slotRows');
+        const focused = document.activeElement?.closest('.slot-select')?.dataset.slot;
+        body.innerHTML = '';
+        $('slotCount').textContent = `${slots.length} slots`;
+        slots.forEach((state, slot) => {
+          const model = state.dirty ? state.draft : state.saved || (state.draft?.text?.trim() ? state.draft : null);
+          const row = document.createElement('tr'); row.className = slot === selectedSlot ? 'selected' : '';
+          const stateClass = state.dirty ? 'modified' : state.saved ? 'saved' : 'empty';
+          row.innerHTML = `<td class="slot-number"><button class="slot-select" data-slot="${slot}" aria-label="Edit slot ${slot}" aria-pressed="${slot === selectedSlot}" type="button">${slot}</button></td><td class="slot-note">${slot < caps.midiCount ? caps.midiBase + slot : '—'}</td><td class="slot-preview">${model?.text ? escapeHtml(model.text) : '<span class="hint">Empty</span>'}</td><td class="slot-profile">${model ? escapeHtml(profileSummary(model)) : '—'}</td><td><span class="state ${stateClass}">${state.dirty ? 'Modified' : state.saved ? 'Saved' : 'Empty'}</span></td>`;
+          row.addEventListener('click', () => selectSlot(slot));
+          row.querySelector('.slot-select').addEventListener('keydown', event => {
+            if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+            event.preventDefault();
+            const next = clamp(slot + (event.key === 'ArrowDown' ? 1 : -1), 0, slots.length - 1);
+            selectSlot(next);
+            $('slotRows').querySelector(`[data-slot="${next}"]`).focus();
+          });
+          body.appendChild(row);
+        });
+        if (focused != null) body.querySelector(`[data-slot="${focused}"]`)?.focus();
+      }
+
+      function escapeHtml(value) { return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char])); }
+
+      function midiNoteName(note) {
+        const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        return `${names[note % 12]}${Math.floor(note / 12) - 1}`;
+      }
+
+      function lastSavedSlot(start, end) {
+        for (let slot = end - 1; slot >= start; slot--) if (slots[slot]?.saved) return slot;
+        return -1;
+      }
+
+      function referenceTable(start, end, midiMapped, bank) {
+        let html = '<table><thead><tr><th class="col-slot">Slot</th><th class="col-note">MIDI</th><th class="col-name">Note</th><th class="col-text">Sentence</th><th class="col-profile">Voice / rate</th><th class="col-design">Saved voice parameters (dv)</th></tr></thead><tbody>';
+        for (let slot = start; slot < end; slot++) {
+          const model = bank.saved[slot];
+          if (!model) continue;
+          const note = midiMapped ? bank.caps.midiBase + slot : null;
+          html += `<tr><td class="col-slot">${slot}</td><td class="col-note">${note ?? '&mdash;'}</td><td class="col-name">${note == null ? '&mdash;' : midiNoteName(note)}</td><td class="col-text">${escapeHtml(model.text)}</td><td class="col-profile">${escapeHtml(profileSummary(model))}</td><td class="col-design mono">${model.design ? escapeHtml(model.design) : 'Voice defaults'}</td></tr>`;
+        }
+        return html + '</tbody></table>';
+      }
+
+      function renderReferenceSheet() {
+        if (!referenceSnapshot) return;
+        const bank = referenceSnapshot;
+        const source = bank.caps;
+        const midiEnd = Math.min(source.slots, source.midiCount);
+        let html = '<div class="midi-ref-head">';
+        html += '<h2 id="midiRefTitle" class="midi-ref-title">Kraftor VAX — saved FRAM slots</h2>';
+        html += '<p class="midi-ref-sub">Saved sentences and exact stored voice settings, reread from Kraftor.</p>';
+        html += `<p class="midi-ref-sub">Firmware ${escapeHtml(source.firmware)} · ${bank.saved.filter(Boolean).length} saved / ${source.slots} slots · MIDI channel ${source.midiChannel ?? 'not reported'} · read from FRAM ${escapeHtml(new Date(bank.readAt).toLocaleString())}</p>`;
+        html += '</div>';
+        if (bank.saved.slice(0, midiEnd).some(Boolean)) {
+        html += '<h3 class="midi-ref-block-title">MIDI-triggered FRAM slots</h3>';
+        html += `<p class="midi-ref-sub">Slot 0 = MIDI ${source.midiBase} (${midiNoteName(source.midiBase)}) · slots 0–${midiEnd - 1} = notes ${source.midiBase}–${source.midiBase + midiEnd - 1}.</p>`;
+        html += referenceTable(0, midiEnd, true, bank);
+        }
+        if (midiEnd < source.slots && bank.saved.slice(midiEnd).some(Boolean)) {
+          html += '<h3 class="midi-ref-block-title">Designer playback slots</h3>';
+          html += `<p class="midi-ref-sub">Slots ${midiEnd}–${source.slots - 1} have no MIDI-note mapping and play from VAX Designer.</p>`;
+          html += referenceTable(midiEnd, source.slots, false, bank);
+        }
+        if (!bank.saved.some(Boolean)) html += '<p class="midi-ref-sub">No saved sentences in this FRAM bank.</p>';
+        if (source.ccVersion === 1) {
+        html += '<h3 class="midi-ref-block-title">MIDI controls — firmware 1.3</h3><div class="reference-cc-grid">';
+        const ccLegend = [['16', 'Voice', '0–8: Paul through Wendy'], ['17', 'Speech rate', '0–127 → 75–600'], ['18', 'Average pitch', '0–127 → 50–500'], ['19', 'Pitch range', '0–127 → 0–250'], ['20', 'Breathiness', '0–127 → 0–70'], ['21', 'Head size', '0–127 → 65–135'], ['22', 'Laryngealization', '0–127 → 0–100'], ['121', 'Reset live overrides', 'Return to stored/serial profile']];
+        html += ccLegend.map(([cc, name, range]) => `<div class="reference-cc-item"><strong>CC${cc} · ${name}</strong><br>${range}</div>`).join('');
+        html += '</div>';
+        } else html += '<p class="midi-ref-sub">The connected firmware does not report support for the CC16–22 map.</p>';
+        html += '<div class="midi-ref-foot">Source: saved physical FRAM only. Empty slots, browser drafts, temporary serial RAM phrases and live CC overrides are not included. The legacy serial @ list can temporarily override its matching MIDI notes. Note names use C4 = MIDI 60; MIDI numbers are authoritative.</div>';
+        $('midiRefBody').innerHTML = html;
+      }
+
+      async function refreshReferenceSheet() {
+        caps = { ...caps, ...(await requestInfo()) };
+        if (!caps.ready || !caps.slots) throw new Error('Saved FRAM memory is not available.');
+        await reloadFram();
+        referenceSnapshot = { caps: { ...caps }, saved: slots.map(state => state.saved ? { ...state.saved } : null), readAt: new Date().toISOString() };
+        renderReferenceSheet();
+      }
+
+      async function openReferenceSheet() {
+        try {
+          setNotice('Reading physical FRAM for the reference sheet…');
+          await refreshReferenceSheet();
+          document.body.classList.add('print-reference-sheet');
+          $('referenceBackdrop').showModal();
+        } catch (error) {
+          setNotice(`Reference sheet could not be prepared: ${error.message}`, 'error');
+        }
+      }
+
+      function printReferenceSheet() {
+        if (readingFram || !referenceSnapshot) return;
+        renderReferenceSheet();
+        document.body.classList.add('print-reference-sheet');
+        requestAnimationFrame(() => setTimeout(() => window.print(), 60));
+      }
+
+      function selectSlot(slot, loadProfile = true) {
+        selectedSlot = slot;
+        const state = slots[slot];
+        if (!state.draft) state.draft = state.saved ? { ...state.saved } : { ...currentProfile(), text: '' };
+        if (loadProfile) setEditorProfile(state.draft);
+        $('slotSentence').value = state.draft.text || '';
+
+        $('slotEditorTitle').textContent = `Slot ${slot}`;
+        $('slotMidiNote').textContent = slot < caps.midiCount ? `MIDI note ${caps.midiBase + slot}` : 'Designer playback';
+        renderSlots(); updateEditorDetails();
+      }
+
+      function updateDraftFromEditor() {
+        clearBulkPasteUndo();
+        if (!slots[selectedSlot]) return;
+        const draft = modelForSelected();
+        const state = slots[selectedSlot];
+        state.draft = draft;
+        state.dirty = state.saved ? JSON.stringify(draft) !== JSON.stringify(state.saved) : Boolean(draft.text.trim());
+        updateEditorDetails(); renderSlots();
+      }
+
+      function updateEditorDetails() {
+        const state = slots[selectedSlot];
+        $('slotEditorState').textContent = state?.dirty ? 'Modified' : state?.saved ? 'Saved' : 'Empty';
+        $('slotEditorState').className = `state ${state?.dirty ? 'modified' : state?.saved ? 'saved' : 'empty'}`;
+        const model = modelForSelected();
+        const designBytes = enc.encode(model.design).length, textBytes = enc.encode(model.text.trim()).length, total = 7 + designBytes + textBytes;
+        $('slotSentenceCounter').textContent = `${textBytes} / ${caps.maxText} characters`;
+        $('byteBudget').textContent = `${total} / ${caps.maxPayload} bytes`;
+        $('byteBudget').classList.toggle('over', total > caps.maxPayload);
+        updateSlotActionButtons();
+      }
+
+      async function reloadFram() {
+        if (readingFram) throw new Error('Memory is already being read. Wait until it finishes.');
+        readingFram = true;
+        updateConnectionUi();
+        try {
+          clearBulkPasteUndo();
+          setNotice(`Reading ${caps.slots} physical FRAM slots…`);
+          for (let slot = 0; slot < caps.slots; slot++) {
+            const bytes = await requestSlot(slot);
+            const model = decodePayload(bytes);
+            const draft = slots[slot]?.dirty ? { ...slots[slot].draft } : model ? { ...model } : null;
+            const dirty = draft ? JSON.stringify(draft) !== JSON.stringify(model) && Boolean(draft.text.trim()) : false;
+            slots[slot] = { saved: model, draft, dirty, status: model ? 'saved' : 'empty' };
+            if (slot % 5 === 0) { setNotice(`Reading physical FRAM… ${slot + 1}/${caps.slots}`); renderSlots(); }
+          }
+          selectSlot(selectedSlot);
+          const drafts = slots.filter(state => state.dirty).length;
+          setNotice(`Loaded all ${caps.slots} slots from physical FRAM.${drafts ? ` Kept ${drafts} edited drafts.` : ''}`, 'success');
+        } finally {
+          readingFram = false;
+          updateConnectionUi();
+        }
+      }
+
+      async function saveSlot(slot) {
+        clearBulkPasteUndo();
+        try {
+          if (slot === selectedSlot) updateDraftFromEditor();
+          const state = slots[slot];
+          if (!state.draft?.text?.trim()) throw new Error('Enter a sentence before saving.');
+          setNotice(`Saving slot ${slot}…`);
+          const saved = await saveSlotToDevice(slot, state.draft);
+          state.saved = saved; state.draft = { ...saved }; state.dirty = false; renderSlots();
+          if (slot === selectedSlot) selectSlot(slot); setNotice(`Slot ${slot} saved and verified by Kraftor.`, 'success');
+        } catch (error) { setNotice(`Slot ${slot} was not saved: ${error.message}`, 'error'); }
+      }
+
+      async function playSlot(slot) {
+        try { const tx = nextTransaction(); setNotice(`Playing slot ${slot}…`); await sendAndWaitAck(tx, C.play, [slot], 10000); setNotice(`Slot ${slot} playback started.`, 'success'); }
+        catch (error) { setNotice(`Slot ${slot} could not play: ${error.message}`, 'error'); }
+      }
+
+      async function eraseSlot(slot) {
+        clearBulkPasteUndo();
+        if (!confirm(`Erase VAX FRAM slot ${slot}?`)) return;
+        try { const tx = nextTransaction(); await sendAndWaitAck(tx, C.erase, [slot]); slots[slot] = { saved: null, draft: null, dirty: false, status: 'empty' }; selectSlot(slot); setNotice(`Slot ${slot} erased.`, 'success'); }
+        catch (error) { setNotice(`Slot ${slot} was not erased: ${error.message}`, 'error'); }
+      }
+
+      function backupObject() {
+        return { format: 'polaxis-kraftor-vax-fram-v1', exportedAt: new Date().toISOString(), device: { model: 'VAX', firmware: caps.firmware, slots: caps.slots, midiBase: caps.midiBase, midiCount: caps.midiCount, profileVersion: caps.profileVersion }, slots: slots.map((state, slot) => ({ slot, note: slot < caps.midiCount ? caps.midiBase + slot : null, ...(state.saved || { empty: true }) })) };
+      }
+
+      function downloadJson(data, filename) {
+        const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+        const link = document.createElement('a'); link.href = url; link.download = filename; link.click(); setTimeout(() => URL.revokeObjectURL(url), 0);
+      }
+
+      function validateBackup(data) {
+        if (!data || data.format !== 'polaxis-kraftor-vax-fram-v1' || !Array.isArray(data.slots)) throw new Error('This is not a VAX FRAM backup.');
+        if (data.slots.length !== caps.slots) throw new Error(`Backup has ${data.slots.length} slots; device reports ${caps.slots}.`);
+        const seen = new Set();
+        const models = Array(caps.slots).fill(null);
+        data.slots.forEach(entry => {
+          if (!Number.isInteger(entry.slot) || entry.slot < 0 || entry.slot >= caps.slots || seen.has(entry.slot)) throw new Error('Backup contains an invalid or duplicate slot.');
+          seen.add(entry.slot);
+          if (!entry.empty) { const model = { voice: entry.voice, rate: entry.rate, design: entry.design || '', text: entry.text || '' }; buildPayload(model, model.text); models[entry.slot] = model; }
+        });
+        return models;
+      }
+
+      async function restoreBackup() {
+        if (!importedBackup || !confirm('Restore the imported backup to physical VAX FRAM? Existing slots will be replaced or erased.')) return;
+        try {
+          for (let slot = 0; slot < importedBackup.length; slot++) {
+            setNotice(`Restoring slot ${slot + 1}/${importedBackup.length}…`);
+            if (importedBackup[slot]) await saveSlotToDevice(slot, importedBackup[slot]);
+            else { const tx = nextTransaction(); await sendAndWaitAck(tx, C.erase, [slot]); }
+          }
+          importedBackup = null; await reloadFram(); setNotice('Backup restored and reread from physical FRAM.', 'success');
+        } catch (error) { setNotice(`Restore stopped: ${error.message}`, 'error'); }
+      }
+
+      function clearBulkPasteUndo() {
+        bulkPasteUndo = null;
+        $('undoBulkPasteButton').hidden = true;
+      }
+
+      function bulkPastePlan() {
+        const raw = $('bulkPasteText').value.replace(/\r\n?/g, '\n').trim();
+        const sentences = (raw.startsWith('@') ? raw.split(/[@\n]/) : raw.split('\n')).map(text => text.trim()).filter(Boolean);
+        const startValue = $('bulkPasteStart').value.trim();
+        const start = Number(startValue);
+        if (!startValue || !Number.isInteger(start) || start < 0 || start >= slots.length) throw new Error(`Choose a start slot between 0 and ${slots.length - 1}.`);
+        if (sentences.length > slots.length - start) throw new Error(`${sentences.length} sentences do not fit from slot ${start}. Only ${slots.length - start} slots remain. Choose an earlier start slot or paste fewer sentences.`);
+        const defaultProfile = currentProfile();
+        return sentences.map((text, index) => {
+          const slot = start + index;
+          const state = slots[slot];
+          const profile = state.draft || state.saved || defaultProfile;
+          const model = { voice: profile.voice, rate: profile.rate, design: profile.design, text };
+          try { buildPayload(model, text); }
+          catch (error) { throw new Error(`Sentence ${index + 1} (slot ${slot}): ${error.message}`); }
+          return { slot, model, replaces: Boolean(state.draft?.text?.trim() || state.saved?.text?.trim()) };
+        });
+      }
+
+      function updateBulkPastePreview() {
+        const error = $('bulkPasteError');
+        error.hidden = true;
+        error.textContent = '';
+        $('bulkPasteLoadButton').disabled = true;
+        $('bulkPasteLoadButton').textContent = 'Load drafts';
+        $('bulkPastePreview').innerHTML = '';
+        try {
+          const plan = bulkPastePlan();
+          if (!plan.length) { $('bulkPasteSummary').textContent = 'Paste your sentences to preview the slots.'; return; }
+          const first = plan[0].slot, last = plan.at(-1).slot, replaces = plan.filter(item => item.replaces).length;
+          $('bulkPasteSummary').textContent = `${plan.length} sentence${plan.length === 1 ? '' : 's'} → ${first === last ? `slot ${first}` : `slots ${first}–${last}`}.${replaces ? ` Replaces ${replaces} existing draft sentence${replaces === 1 ? '' : 's'}.` : ''} Saved memory is unchanged until you save.`;
+          $('bulkPastePreview').innerHTML = plan.map(({ slot, model }) => `<li><span class="hint">Slot ${slot} · ${slot < caps.midiCount ? `MIDI note ${caps.midiBase + slot}` : 'Designer playback'} · ${escapeHtml(profileSummary(model))}</span>${escapeHtml(model.text)}</li>`).join('');
+          $('bulkPasteLoadButton').disabled = false;
+          $('bulkPasteLoadButton').textContent = `Load ${plan.length} draft${plan.length === 1 ? '' : 's'}`;
+        } catch (problem) {
+          $('bulkPasteSummary').textContent = 'No drafts have been changed.';
+          error.textContent = problem.message; error.hidden = false;
+        }
+      }
+
+      function openBulkPaste() {
+        $('bulkPasteLimits').textContent = `${slots.length} sentence slots · up to ${caps.maxText} characters per sentence.`;
+        $('bulkPasteStart').max = slots.length - 1;
+        $('bulkPasteStart').value = selectedSlot;
+        updateBulkPastePreview();
+        $('bulkPasteDialog').showModal();
+      }
+
+      function loadBulkPaste() {
+        try {
+          const plan = bulkPastePlan();
+          if (!plan.length) return;
+          updateDraftFromEditor();
+          const undo = { selectedSlot, slots: plan.map(({ slot }) => ({ slot, state: structuredClone(slots[slot]) })) };
+          plan.forEach(({ slot, model }) => {
+            const state = slots[slot];
+            state.draft = { ...model };
+            state.dirty = JSON.stringify(model) !== JSON.stringify(state.saved);
+          });
+          selectSlot(plan[0].slot);
+          bulkPasteUndo = undo;
+          $('undoBulkPasteButton').hidden = false;
+          $('bulkPasteDialog').close();
+          setNotice(`Loaded ${plan.length} sentence draft${plan.length === 1 ? '' : 's'}. Select each slot to adjust its voice settings, audition, and save to Kraftor.`, 'success');
+        } catch (error) {
+          $('bulkPasteError').textContent = error.message;
+          $('bulkPasteError').hidden = false;
+        }
+      }
+
+      function undoBulkPaste() {
+        if (!bulkPasteUndo) return;
+        const undo = bulkPasteUndo;
+        undo.slots.forEach(({ slot, state }) => { slots[slot] = state; });
+        clearBulkPasteUndo();
+        selectSlot(undo.selectedSlot);
+        setNotice('Bulk paste undone. Your previous drafts are restored.');
+      }
+
+      function openHelp(topicId) {
+        const dialog = $('helpDialog');
+        if (topicId) {
+          dialog.querySelectorAll('.help-topic').forEach(topic => { topic.open = topic.id === topicId; });
+        }
+        dialog.showModal();
+        if (topicId) $(topicId).querySelector('summary').focus();
+      }
+      $('helpButton').addEventListener('click', () => openHelp());
+      $('dectalkHelpButton').addEventListener('click', () => openHelp('dectalkHelpTopic'));
+      $('helpCloseButton').addEventListener('click', () => $('helpDialog').close());
+      $('midiStatusRefreshButton').addEventListener('click', async () => {
+        $('midiStatusRefreshButton').disabled = true;
+        try {
+          caps = { ...caps, ...(await requestInfo()) };
+          updateConnectionUi(); renderSlots();
+        } catch (error) { setNotice(`Channel information could not be read: ${error.message}`, 'error'); }
+        finally { $('midiStatusRefreshButton').disabled = !kraftorConnected; }
+      });
+      $('bulkPasteButton').addEventListener('click', openBulkPaste);
+      $('bulkPasteCancelButton').addEventListener('click', () => $('bulkPasteDialog').close());
+      $('bulkPasteText').addEventListener('input', updateBulkPastePreview);
+      $('bulkPasteStart').addEventListener('input', updateBulkPastePreview);
+      $('bulkPasteLoadButton').addEventListener('click', loadBulkPaste);
+      $('undoBulkPasteButton').addEventListener('click', undoBulkPaste);
+
+      $('connectButton').addEventListener('click', async () => {
+        if (kraftorConnected) { disconnectMidi(); return; }
+        if (serialPort) { await disconnectSerial(); return; }
+        connecting = true;
+        updateConnectionUi();
+        try {
+          setNotice('Connecting to Kraftor… Allow device access if your browser asks.');
+          await connectMidi();
+        } catch (error) {
+          disconnectMidi();
+          setNotice(`Connection failed: ${error.message}`, 'error');
+        } finally {
+          connecting = false;
+          updateConnectionUi();
+        }
+      });
+      $('midiOutput').addEventListener('change', () => localStorage.setItem('vax.midi.output', $('midiOutput').value));
+      $('speechRate').addEventListener('input', event => { $('speechRateNumber').value = event.target.value; updateDraftFromEditor(); });
+      $('speechRateNumber').addEventListener('input', event => { const value = clamp(event.target.value, 75, 600); $('speechRate').value = value; updateDraftFromEditor(); });
+      $('resetDesignButton').addEventListener('click', resetDesign);
+      $('slotSentence').addEventListener('input', updateDraftFromEditor);
+      $('auditionButton').addEventListener('click', async () => {
+        try {
+          const draft = modelForSelected();
+          setNotice(`Auditioning the unsaved Slot ${selectedSlot} draft…`);
+          if (kraftorConnected) await audition(draft, draft.text);
+          else await auditionSerial(draft, draft.text);
+          setNotice(`Slot ${selectedSlot} draft audition started. Saved memory was not changed.`, 'success');
+        } catch (error) { setNotice(`Audition failed: ${error.message}`, 'error'); }
+      });
+      $('serialConnectButton').addEventListener('click', async () => {
+        if (serialPort) { await disconnectSerial(); return; }
+        connecting = true; updateConnectionUi();
+        try { await connectSerial(); }
+        catch (error) { await disconnectSerial(); setNotice(`Serial connection failed: ${error.message}`, 'error'); }
+        finally { connecting = false; updateConnectionUi(); }
+      });
+      navigator.serial?.addEventListener('disconnect', event => {
+        if (event.target === serialPort || event.port === serialPort) disconnectSerial();
+      });
+      async function sendTerminalInput() {
+        try { await sendSerialLine($('serialCommand').value); $('serialCommand').value = ''; }
+        catch (error) { setNotice(`Serial send failed: ${error.message}`, 'error'); }
+      }
+      $('serialSendButton').addEventListener('click', sendTerminalInput);
+      $('serialCommand').addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); sendTerminalInput(); } });
+      $('saveSlotButton').addEventListener('click', () => saveSlot(selectedSlot));
+      $('playSlotButton').addEventListener('click', () => playSlot(selectedSlot));
+      $('eraseSlotButton').addEventListener('click', () => eraseSlot(selectedSlot));
+      $('reloadButton').addEventListener('click', () => reloadFram().catch(error => setNotice(`Reload failed: ${error.message}`, 'error')));
+      $('referenceButton').addEventListener('click', openReferenceSheet);
+      $('referenceRefreshButton').addEventListener('click', () => refreshReferenceSheet().catch(error => setNotice(`Reference refresh failed: ${error.message}`, 'error')));
+      $('referencePrintButton').addEventListener('click', printReferenceSheet);
+      $('referenceCloseButton').addEventListener('click', () => { $('referenceBackdrop').close(); });
+      $('referenceBackdrop').addEventListener('click', event => { if (event.target === $('referenceBackdrop')) $('referenceBackdrop').close(); });
+      window.addEventListener('afterprint', () => { if (!$('referenceBackdrop').open) document.body.classList.remove('print-reference-sheet'); });
+      $('referenceBackdrop').addEventListener('close', () => document.body.classList.remove('print-reference-sheet'));
+      $('exportButton').addEventListener('click', async () => { try { await reloadFram(); downloadJson(backupObject(), `kraftor-vax-fram-${new Date().toISOString().slice(0,10)}.json`); setNotice('Physical FRAM backup exported.', 'success'); } catch (error) { setNotice(`Export failed: ${error.message}`, 'error'); } });
+      $('importButton').addEventListener('click', () => $('importFile').click());
+      $('importFile').addEventListener('change', async event => { try { const data = JSON.parse(await event.target.files[0].text()); importedBackup = validateBackup(data); $('restoreButton').disabled = !(kraftorConnected && caps.ready); setNotice('Backup loaded locally. Review it, then choose Restore to write FRAM.', 'success'); } catch (error) { importedBackup = null; setNotice(`Import failed: ${error.message}`, 'error'); } finally { event.target.value = ''; } });
+      $('restoreButton').addEventListener('click', restoreBackup);
+      $('formatButton').addEventListener('click', async () => { if (!confirm('Format this FRAM for VAX? This erases all 100 VAX slot headers and cannot be undone.')) return; try { const tx = nextTransaction(); await sendAndWaitAck(tx, C.format, [0x56,0x41,0x58], 20000); caps.ready = true; resetSlots(caps.slots); updateConnectionUi(); setNotice('FRAM formatted for VAX. All slots are empty.', 'success'); } catch (error) { setNotice(`Format failed: ${error.message}`, 'error'); } });
+
+      renderDesignControls(); updateDesignFromControls(); renderVoiceGrid(); resetSlots(caps.slots); updateConnectionUi(); updateEditorDetails();
+    })();
+  </script>
 </body>
-
 </html>
