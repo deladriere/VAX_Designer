@@ -24,14 +24,17 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   <style>
     :root { color-scheme: dark; --bg:#10161d; --surface:#171e27; --surface-2:#1b232d; --surface-3:#232d39; --line:#2f3c49; --line-soft:#26313d; --text:#edf2f7; --muted:#a4afbd; --accent:#65b9f0; --accent-soft:rgba(71,148,211,.17); --success:#6fd482; --danger:#ed948a; --warning:#ebc471; --radius:6px; --shadow:0 20px 70px rgba(0,0,0,.35); font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
     * { box-sizing:border-box; } [hidden] { display:none!important; }
-    html,body { margin:0; min-height:100%; } body { background:var(--bg); color:var(--text); font-size:14px; overflow:hidden; }
+    html,body { margin:0; min-height:100%; } body { background:var(--bg); color:var(--text); font-size:14px; overflow:hidden; height:100dvh; display:flex; flex-direction:column; }
     button,input,select,textarea { font:inherit; color:inherit; } button,input,select,textarea:focus { accent-color:var(--accent); }
     button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
-    .app-header { height:76px; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid var(--line); background:#10161d; }
+    .app-header { min-height:76px; flex-shrink:0; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid var(--line); background:#10161d; }
+    .header-main { display:flex; align-items:center; gap:28px; flex:1; min-width:0; }
+    .brand { min-width:0; }
     .brand h1 { margin:0; font-size:24px; font-weight:650; letter-spacing:-.03em; } .brand p { margin:5px 0 0; color:var(--muted); font-size:12px; } a { color:var(--accent); text-underline-offset:3px; }
     .connection { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:10px; } .connection-status { color:var(--muted); font-size:13px; } .connection select { width:auto; max-width:240px; }
+    .connection-firmware { color:var(--muted); font-size:12px; white-space:nowrap; }
     .status-dot { width:9px; height:9px; flex-shrink:0; border-radius:50%; background:#687584; box-shadow:0 0 0 4px rgba(104,117,132,.13); } .status-dot.connected { background:var(--success); box-shadow:0 0 0 4px rgba(111,212,130,.12); }
-    .workspace { display:grid; grid-template-columns:40% 60%; height:calc(100dvh - 76px); }
+    .workspace { display:grid; grid-template-columns:40% 60%; height:auto; flex:1; min-height:0; }
     .voice-panel,.library-panel { min-width:0; min-height:0; padding:20px 24px; }
     .voice-panel { overflow:auto; background:#111820; border-right:1px solid var(--line); }
     .library-panel { display:flex; flex-direction:column; overflow:hidden; background:#10161d; }
@@ -95,20 +98,50 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     .midi-ref-head { border-bottom:2px solid #273746; padding-bottom:12px; margin-bottom:16px; } .midi-ref-title { font-size:25px; margin:0 0 8px; } .midi-ref-sub { color:#4a5868; font-size:12px; line-height:1.5; margin:4px 0; } .midi-ref-block-title { break-after:avoid; font-size:16px; margin:17px 0 8px; } .midi-reference-sheet table { table-layout:auto; font-size:12px; } .midi-reference-sheet th { position:static; padding:8px; background:#edf1f5; color:#354556; font-size:11px; border:1px solid #c5ced7; } .midi-reference-sheet td { height:auto; padding:8px; color:#1b2430; font-size:12px; border:1px solid #c5ced7; overflow-wrap:anywhere; } .midi-reference-sheet tr { cursor:auto; box-shadow:none; } .midi-reference-sheet .col-slot,.midi-reference-sheet .col-note { width:44px; } .midi-reference-sheet .col-name { width:52px; white-space:nowrap; } .midi-reference-sheet .col-profile { width:100px; white-space:nowrap; } .midi-reference-sheet .col-design { width:28%; font-size:11px; } .midi-reference-sheet .col-text { width:42%; } .midi-ref-foot { margin-top:14px; border-top:1px solid #c5ced7; padding-top:10px; font-size:11px; line-height:1.5; color:#4a5868; }
     .reference-cc-grid { break-inside:avoid; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; } .reference-cc-item { font-size:11px; border-top:1px solid #c5ced7; padding-top:6px; line-height:1.5; }
     @media(max-width:1360px) { .editor-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } .library-head { align-items:flex-start; } .toolbar .btn { padding:8px 9px; font-size:12px; } }
-    @media(max-width:1000px) { body { overflow:auto; } .workspace { display:block; height:auto; } .voice-panel { overflow:visible; border-right:0; border-bottom:1px solid var(--line); } .library-panel { min-height:680px; overflow:visible; } .slot-table-wrap { height:550px; flex:none; } .editor-actions { grid-template-columns:repeat(4,minmax(0,1fr)); } }
-    @media(max-width:700px) { .app-header { height:auto; flex-direction:column; align-items:stretch; padding:16px; gap:12px; } .connection { justify-content:flex-start; } .connection-status { font-size:12px; } .voice-panel,.library-panel { padding:18px 16px; } .editor-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } .editor-actions .btn { font-size:13px; } .slider-row { grid-template-columns:144px minmax(0,1fr) 54px; gap:8px; } .slider-row label { font-size:12px; } .slider-row label .cc-badge { display:table; margin:3px 0 0; } .library-head { flex-direction:column; gap:12px; } .toolbar { justify-content:flex-start; } .sentence-tools { gap:6px; } .sentence-tools .btn { font-size:11px; padding:8px; } .midi-channel-body { align-items:start; } .dip-housing { gap:7px; padding:7px; } .dip-on-label { min-width:20px; } .midiSwitchHelp { font-size:11px; } .help-dialog { padding:18px; } .help-head { top:-18px; } .help-head h2 { font-size:19px; } .help-dialog th,.help-dialog td { padding:6px; font-size:11px; } .slot-table-wrap th,.slot-table-wrap td { padding:10px; } .slot-table-wrap th:nth-child(4),.slot-table-wrap td:nth-child(4) { display:none; } .slot-table-wrap col:nth-child(4) { width:0!important; } .reference-cc-grid { grid-template-columns:repeat(2,1fr); } .midi-reference-sheet { padding:16px; } }
+    .voice-source { margin:0; width:490px; max-width:100%; flex-shrink:1; padding:0; border:0; min-width:0; }
+    .voice-source legend { margin-bottom:5px; font-size:11px; color:var(--muted); font-weight:600; }
+    .voice-source-options { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+    .voice-source-options label { flex:none; position:relative; cursor:pointer; }
+    .voice-source-options input { position:absolute; opacity:0; width:1px; height:1px; }
+    .voice-source-options span { display:block; padding:6px 10px; text-align:center; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface-2); font-size:12px; }
+    .voice-source-options input:checked + span { background:#16364f; border-color:var(--accent); }
+    .voice-source-options input:focus-visible + span { outline:2px solid var(--accent); outline-offset:3px; }
+    .voice-source-options input:disabled + span { opacity:.55; cursor:default; }
+    .voice-source-description { flex:1 1 260px; min-width:220px; max-width:350px; margin-left:10px; font-size:12px; line-height:1.45; }
+    .voice-source-description p { margin:0 0 4px; }
+    .voice-source-description p:last-child { margin-bottom:0; }
+    #voiceStorageHelp,#voiceSourceStatus { color:var(--muted); font-size:11px; }
+    #slotVoiceSettings { margin:0; padding:0; border:0; min-width:0; }
+    #slotVoiceSettings:disabled { opacity:.45; }
+    @media(max-width:1000px) { body { overflow:auto; height:auto; display:block; } .app-header { align-items:flex-start; } .header-main { flex-wrap:wrap; gap:12px 20px; } .workspace { display:block; height:auto; } .voice-panel { overflow:visible; border-right:0; border-bottom:1px solid var(--line); } .library-panel { min-height:680px; overflow:visible; } .slot-table-wrap { height:550px; flex:none; } .editor-actions { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+    @media(max-width:700px) { .voice-source-description { margin-left:0; max-width:none; } .header-main { width:100%; flex-direction:column; align-items:flex-start; gap:12px; } .app-header { height:auto; flex-direction:column; align-items:stretch; padding:16px; gap:12px; } .connection { justify-content:flex-start; } .connection-status { font-size:12px; } .voice-panel,.library-panel { padding:18px 16px; } .editor-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } .editor-actions .btn { font-size:13px; } .slider-row { grid-template-columns:144px minmax(0,1fr) 54px; gap:8px; } .slider-row label { font-size:12px; } .slider-row label .cc-badge { display:table; margin:3px 0 0; } .library-head { flex-direction:column; gap:12px; } .toolbar { justify-content:flex-start; } .sentence-tools { gap:6px; } .sentence-tools .btn { font-size:11px; padding:8px; } .midi-channel-body { align-items:start; } .dip-housing { gap:7px; padding:7px; } .dip-on-label { min-width:20px; } .midiSwitchHelp { font-size:11px; } .help-dialog { padding:18px; } .help-head { top:-18px; } .help-head h2 { font-size:19px; } .help-dialog th,.help-dialog td { padding:6px; font-size:11px; } .slot-table-wrap th,.slot-table-wrap td { padding:10px; } .slot-table-wrap th:nth-child(4),.slot-table-wrap td:nth-child(4) { display:none; } .slot-table-wrap col:nth-child(4) { width:0!important; } .reference-cc-grid { grid-template-columns:repeat(2,1fr); } .midi-reference-sheet { padding:16px; } }
     @media print { @page { size:A4 landscape; margin:10mm; } html,body { height:auto!important; overflow:visible!important; background:#fff!important; color:#000!important; } body.print-reference-sheet .app-header,body.print-reference-sheet .workspace,body.print-reference-sheet #bulkPasteDialog,body.print-reference-sheet #helpDialog { display:none!important; } dialog::backdrop { display:none!important; } body.print-reference-sheet #referenceBackdrop { display:block!important; position:static!important; width:auto!important; max-width:none!important; height:auto!important; max-height:none!important; overflow:visible!important; margin:0!important; padding:0!important; border:0!important; box-shadow:none!important; } .midi-reference-sheet { padding:0!important; overflow:visible!important; } .no-print { display:none!important; } .midi-reference-sheet th { position:static!important; background:#fff!important; font-size:9pt; padding:5px; } .midi-reference-sheet td { font-size:9pt; padding:5px; } .midi-reference-sheet .col-design { font-size:8pt; } .midi-reference-sheet thead { display:table-header-group; } .midi-reference-sheet tr { break-inside:avoid; } .midi-ref-title { font-size:18pt; } .midi-ref-sub { font-size:9pt; } .reference-cc-grid { grid-template-columns:repeat(4,1fr); } .reference-cc-item,.midi-ref-foot { font-size:8pt; } }
   </style>
 </head>
 <body>
   <header class="app-header">
+    <div class="header-main">
     <div class="brand">
       <h1>VAX Designer</h1>
       <p>Voice editor and Kraftor memory library · <a href="https://github.com/deladriere/VAX_Designer" target="_blank" rel="noopener noreferrer">Source code</a></p>
     </div>
+        <fieldset class="voice-source" aria-describedby="voiceSourceHelp voiceStorageHelp voiceSourceStatus">
+          <legend>Voice parameters</legend>
+          <div class="voice-source-options">
+            <label><input id="voiceSourceSlot" name="voiceSource" type="radio" value="0" disabled><span>Slot</span></label>
+            <label><input id="voiceSourceController" name="voiceSource" type="radio" value="1" disabled><span>Controller</span></label>
+            <div class="voice-source-description">
+              <p id="voiceSourceHelp"><strong>Slot:</strong> saved parameters. <strong>Controller:</strong> MIDI CC parameters.</p>
+              <p id="voiceStorageHelp">Saved sentences and voice parameters stay on Kraftor in both modes.</p>
+              <p id="voiceSourceStatus" aria-live="polite">Connect Kraftor to choose a mode.</p>
+            </div>
+          </div>
+        </fieldset>
+    </div>
     <div class="connection">
       <span id="connectionDot" class="status-dot" aria-hidden="true"></span>
       <span id="connectionStatus" class="connection-status" role="status">Kraftor disconnected</span>
+      <span id="firmwareVersion" class="connection-firmware" title="Reported by Kraftor" hidden></span>
       <select id="midiOutput" aria-label="Choose your Kraftor" hidden><option value="">Choose your Kraftor…</option></select>
       <button id="connectButton" class="btn primary" type="button">Connect Kraftor</button>
       <button id="helpButton" class="btn" type="button">Help</button>
@@ -189,6 +222,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 </svg> Erase slot</button>
         </div>
         <div class="editor-caption"><span id="byteBudget" class="counter">7 / 248 bytes</span></div>
+        <fieldset id="slotVoiceSettings" aria-labelledby="voiceTitle">
         <h3 id="voiceTitle" class="section-title">Voice settings<span class="cc-badge" data-cc="16" data-range="0–8 select Paul through Wendy">Voice CC 16</span></h3>
       <div class="field">
         <div class="field-head"><label>Voice </label><span id="voiceValue" class="screen-reader-only">Paul</span></div>
@@ -199,7 +233,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         <div class="slider-row speech-slider-row"><label for="speechRate">Speech rate <span class="cc-badge" data-cc="17" data-range="0–127 → speech rate 75–600">CC 17</span></label><input id="speechRate" type="range" min="75" max="600" value="75"><input id="speechRateNumber" type="number" min="75" max="600" value="75" aria-label="Speech rate value"></div>
         <div id="designControls" class="field" aria-label="Voice design controls"></div>
         <div class="button-row design-reset-row"><button id="resetDesignButton" class="btn" type="button">Reset voice settings</button></div>
-        <p id="midiControlHint" class="field-help">CC16–22 require VAX firmware 1.3. CC121 clears live overrides.</p>
+        </fieldset>
+        <p id="midiControlHint" class="field-help">CC16–22 require VAX firmware 1.3. CC121 resets controller voice settings.</p>
       <section class="midi-channel-panel" aria-label="Kraftor MIDI channel and physical switches">
         <div class="midi-channel-head"><strong id="midiChannelStatus">Connect to read channel</strong><button id="midiStatusRefreshButton" class="btn" type="button" disabled>Refresh</button></div>
         <div class="midi-channel-body">
@@ -232,29 +267,31 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       <div class="library-head"><div><div class="library-title"><h2 id="libraryTitle">Slots</h2><span id="slotCount" class="hint">100 slots</span></div><div id="deviceSummary" class="device-summary">Connect Kraftor to read saved memory.</div></div><div class="toolbar" aria-label="Saved memory actions"><button id="reloadButton" class="btn" type="button" disabled>Reload memory</button><button id="referenceButton" class="btn" type="button" disabled>Print saved slots</button><button id="exportButton" class="btn" type="button" disabled>Export backup</button></div></div>
       <details class="memory-tools"><summary>Backup and memory tools</summary><div class="button-row"><button id="importButton" class="btn" type="button">Import backup</button><button id="restoreButton" class="btn" type="button" disabled>Restore</button><button id="formatButton" class="btn danger" type="button" disabled>Format</button><input id="importFile" class="screen-reader-only" type="file" accept="application/json"></div></details>
       <div id="notice" class="notice" role="status" aria-live="polite">Connect your Kraftor with a USB cable, then click Connect Kraftor.</div>
-      <div class="slot-table-wrap"><table aria-label="VAX sentence slots"><colgroup><col style="width:52px"><col style="width:76px"><col><col style="width:128px"><col style="width:84px"></colgroup><thead><tr><th>Slot</th><th>MIDI note</th><th>Sentence</th><th>Voice / rate</th><th>State</th></tr></thead><tbody id="slotRows"></tbody></table></div>
+      <div class="slot-table-wrap"><table aria-label="VAX sentence slots"><colgroup><col style="width:52px"><col style="width:76px"><col><col style="width:128px"><col style="width:84px"></colgroup><thead><tr><th>Slot</th><th>MIDI note</th><th>Sentence</th><th>Stored voice / rate</th><th>State</th></tr></thead><tbody id="slotRows"></tbody></table></div>
     </section>
   </main>
 
   <dialog id="helpDialog" class="help-dialog" aria-labelledby="helpTitle">
     <div class="help-head"><h2 id="helpTitle">Using VAX Designer</h2><button id="helpCloseButton" class="btn" type="button" autofocus>Close help</button></div>
-    <details class="help-topic" open><summary>Edit a sentence</summary><div class="help-topic-body"><ol><li>Connect Kraftor through USB using <strong>Connect Kraftor</strong>.</li><li>Select a slot on the right. Its sentence and voice settings appear on the left.</li><li>Type a sentence or use <strong>Bulk paste…</strong> for one sentence per line. The old <code>@one@two@three</code> format is also accepted in bulk paste.</li><li>Adjust the voice and sliders. <strong>Audition draft</strong> plays the unsaved settings. <strong>Save to Kraftor</strong> writes that slot to FRAM.</li></ol><p><strong>Play saved slot</strong> plays its stored profile. <strong>Reset voice settings</strong> restores the controls and speech rate 75 while keeping the sentence and selected voice.</p><p>You can select slots with the keyboard: Tab to a slot number, then use the arrow keys, Enter or Space.</p></div></details>
+    <details class="help-topic" open><summary>Edit a sentence</summary><div class="help-topic-body"><ol><li>Connect Kraftor through USB using <strong>Connect Kraftor</strong>.</li><li>Select a slot on the right. Its sentence and voice settings appear on the left.</li><li>Type a sentence or use <strong>Bulk paste…</strong> for one sentence per line. The old <code>@one@two@three</code> format is also accepted in bulk paste.</li><li>Choose <strong>Slot</strong> under <strong>Voice parameters</strong> to adjust the voice and sliders. <strong>Audition draft</strong> plays the unsaved settings. <strong>Save to Kraftor</strong> writes that slot to FRAM.</li></ol><p><strong>Play saved slot</strong> plays its saved sentence using the selected parameter mode. <strong>Reset voice settings</strong> restores the controls and speech rate 75 while keeping the sentence and selected voice.</p><p>You can select slots with the keyboard: Tab to a slot number, then use the arrow keys, Enter or Space.</p></div></details>
+    <details class="help-topic"><summary>Voice parameters: Slot or Controller</summary><div class="help-topic-body"><p>This is one global choice for all slots. <strong>Slot</strong> uses each sentence's saved voice parameters: voice, rate and design. <strong>Controller</strong> uses MIDI CC16–22 for the voice; the slot supplies the sentence. Saved sentences and their voice parameters remain stored on Kraftor in both modes. Controller mode does not apply the stored parameters. Voice sliders are disabled in Controller mode; saving a sentence preserves its stored parameters.</p><p>The choice is saved on Kraftor and restored at startup. Turn a controller knob, then trigger a note to hear its value; turning it during speech affects the next trigger. CC121 resets the controller to Paul, rate 75 and the default design. Controller values are kept in RAM, so send them again after restarting. Native DECtalk commands embedded in a sentence can still change the voice.</p><p>A new note replaces the current phrase. Rapid presses keep only the latest pending trigger. Key release does not stop speech.</p></div></details>
     <details id="dectalkHelpTopic" class="help-topic"><summary>DECtalk native format: speech, phonetics and singing</summary><div class="help-topic-body">
-      <p>The Sentence box accepts real DECtalk commands and phonetics directly. Voice and slider settings are applied first; your native sentence follows unchanged. Type or paste these examples into the same <strong>Sentence</strong> box. Click <strong>Audition draft</strong> to listen, then <strong>Save to Kraftor</strong> to keep the phrase.</p>
+      <p>The Sentence box accepts real DECtalk commands and phonetics directly. The selected voice parameters are applied first; your native sentence follows unchanged. Type or paste these examples into the same <strong>Sentence</strong> box. Click <strong>Audition draft</strong> to listen, then <strong>Save to Kraftor</strong> to keep the phrase.</p>
       <div class="native-example"><strong>Ordinary speech</strong><pre><code>Hello from Kraftor.</code></pre></div>
       <p><code>[:command value]</code> changes a setting. <code>[phonemes]</code> spells sounds instead of words. Begin a phonetic phrase with <code>[:phoneme arpabet speak on]</code> to enable phoneme interpretation.</p>
       <div class="native-example"><strong>Control a pronunciation</strong><pre><code>[:phoneme arpabet speak on]Say [r 'ow b aa t].</code></pre><p>The bracketed sounds say “robot”. The straight apostrophe marks primary stress. Close every bracket before returning to ordinary words.</p></div>
       <div class="native-example"><strong>Add a half-second pause</strong><pre><code>[:phoneme arpabet speak on]Ready [_&lt;500&gt;] now.</code></pre><p><code>_</code> is silence; <code>&lt;500&gt;</code> lasts 500 milliseconds.</p></div>
       <div class="native-example"><strong>Sing three notes on “ah”</strong><pre><code>[:phoneme arpabet speak on][aa&lt;500,25&gt; aa&lt;500,29&gt; aa&lt;1000,32&gt;]</code></pre><p><code>phoneme&lt;duration,pitch&gt;</code>: duration is milliseconds. Pitch numbers 1–37 select musical notes: 25 = C4, 29 = E4, 32 = G4. These are DECtalk tone numbers, separate from the MIDI note that triggers the slot.</p></div>
+      <div class="native-example"><strong>Pseudo-Singing (tremolo effect)</strong><pre><code>[:phoneme arpabet speak on][_&lt;0,1&gt;]1. [_&lt;0,1&gt;]A robot may not injure a human being or, [_&lt;0,1&gt;]through inaction, [_&lt;0,1&gt;]allow a human being to come to harm.</code></pre><p>Place <code>[_&lt;0,1&gt;]</code> before ordinary text to produce the pseudo-singing tremolo effect. The effect resets at sentence or phrase boundaries, so repeat the marker after periods and commas, as in this example. Paste the complete line into a slot's Sentence box and use <strong>Audition draft</strong> to listen.</p></div>
       <div class="native-example"><strong>Change speed within a sentence</strong><pre><code>[:rate 100]Slow first. [:rate 180]Faster now.</code></pre><p><code>[:rate]</code> accepts 75–600 words per minute.</p></div>
       <div class="native-example"><strong>Set an inline voice design</strong><pre><code>[:dv ap 90 pr 0]A steady robot voice.</code></pre><p><code>ap</code> sets average pitch in Hz; <code>pr 0</code> removes pitch variation. Keep <code>[:dv ...]</code> around inline design parameters; <code>ap 90 pr 0</code> alone is ordinary text. When using sliders, the Designer builds the design command for you.</p></div>
-      <p>The Designer applies the selected voice and sliders before your sentence. Inline commands come afterwards and can override those settings or live MIDI CCs; sliders do not display values embedded in your text. <strong>Reset voice settings</strong> keeps the sentence, so remove inline commands there to stop using them.</p>
+      <p>The selected voice parameters are applied before your sentence. Inline commands come afterwards and can override those settings or live MIDI CCs; sliders do not display values embedded in your text. <strong>Reset voice settings</strong> keeps the sentence, so remove inline commands there to stop using them.</p>
       <p>Commands and brackets count toward the 200-character sentence limit and the slot's byte budget. Use plain ASCII characters. <code>/r</code>, <code>/v</code> and <code>/d</code> belong in the legacy serial terminal; use <code>[:...]</code> here. Bulk paste accepts one complete native phrase per line. Serial audition also sends a complete native DECtalk phrase; the manual serial terminal keeps its older slash commands.</p>
       <p><a href="https://www.polaxis.be/vax-serial-midi/" target="_blank" rel="noopener noreferrer">Polaxis VAX examples</a> · <a href="assets/EpsonDECtalk501.pdf" target="_blank" rel="noopener noreferrer">Fonix DECtalk 5.01 guide (PDF)</a> · <a href="https://www.polaxis.be/download/dectalk-user-guide/" target="_blank" rel="noopener noreferrer">Guide on Polaxis</a>: phonetic symbols p. 44, pitch/duration p. 56, tone table p. 57.</p>
     </div></details>
     <details class="help-topic"><summary>Drafts, saved memory and temporary RAM</summary><div class="help-topic-body"><p>Drafts live in this browser session until you save them. Saved FRAM slots survive a restart. Bulk paste loads drafts and keeps each destination's voice settings; it does not write memory automatically.</p><p>The bank holds 100 slots. Slots 0–91 are triggered by MIDI notes 36–127. Slots 92–99 play from the Designer only.</p><p>The separate legacy serial <code>@</code> parser holds at most 12 temporary RAM phrases. Those phrases disappear on restart and can override their matching MIDI notes while loaded. They are not the FRAM bank.</p><p>Sentences use ASCII text, up to 200 characters. Text and voice parameters together must fit the slot's 248-byte budget. Invalid bulk pastes are rejected as a whole.</p></div></details>
     <details class="help-topic"><summary>MIDI channel and physical switches</summary><div class="help-topic-body"><p>The four physical switches select channels 1–16: all OFF is channel 1 and all ON is channel 16. The channel is the binary switch value plus one. Restart Kraftor after changing switches, then click <strong>Refresh</strong>. The on-screen switches are read-only.</p></div></details>
-    <details class="help-topic"><summary>MIDI CC controls — VAX firmware 1.3</summary><div class="help-topic-body"><p>Send these CCs on Kraftor's MIDI channel. They affect the next MIDI-note-triggered phrase, without changing saved memory. Designer sliders edit slot drafts independently.</p><table class="help-cc-table"><thead><tr><th>CC</th><th>Control</th><th>MIDI value</th><th>Result</th></tr></thead><tbody><tr><td>16</td><td>Voice</td><td>0–8</td><td>Paul, Harry, Betty, Ursula, Dennis, Kit, Frank, Rita, Wendy</td></tr><tr><td>17</td><td>Speech rate</td><td>0–127</td><td>75–600</td></tr><tr><td>18</td><td>Average pitch</td><td>0–127</td><td>50–500</td></tr><tr><td>19</td><td>Pitch range</td><td>0–127</td><td>0–250</td></tr><tr><td>20</td><td>Breathiness</td><td>0–127</td><td>0–70</td></tr><tr><td>21</td><td>Head size</td><td>0–127</td><td>65–135</td></tr><tr><td>22</td><td>Laryngealization</td><td>0–127</td><td>0–100</td></tr><tr><td>121</td><td>Reset live overrides</td><td>Any</td><td>Return to the phrase's stored/serial settings</td></tr></tbody></table><p>CC17–22 scale linearly over the shown ranges. CC16 values above 8 are ignored.</p></div></details>
+    <details class="help-topic"><summary>MIDI CC controls — VAX firmware 1.3</summary><div class="help-topic-body"><p>Send these CCs on Kraftor's MIDI channel. In Controller mode they affect the next trigger, without changing saved slot settings. Slot mode uses the saved profile. Designer sliders edit the slot profile in Slot mode.</p><table class="help-cc-table"><thead><tr><th>CC</th><th>Control</th><th>MIDI value</th><th>Result</th></tr></thead><tbody><tr><td>16</td><td>Voice</td><td>0–8</td><td>Paul, Harry, Betty, Ursula, Dennis, Kit, Frank, Rita, Wendy</td></tr><tr><td>17</td><td>Speech rate</td><td>0–127</td><td>75–600</td></tr><tr><td>18</td><td>Average pitch</td><td>0–127</td><td>50–500</td></tr><tr><td>19</td><td>Pitch range</td><td>0–127</td><td>0–250</td></tr><tr><td>20</td><td>Breathiness</td><td>0–127</td><td>0–70</td></tr><tr><td>21</td><td>Head size</td><td>0–127</td><td>65–135</td></tr><tr><td>22</td><td>Laryngealization</td><td>0–127</td><td>0–100</td></tr><tr><td>121</td><td>Reset controller voice</td><td>Any</td><td>Paul, rate 75, default design</td></tr></tbody></table><p>CC17–22 scale linearly over the shown ranges. CC16 values above 8 are ignored.</p></div></details>
     <details class="help-topic"><summary>Print and backup</summary><div class="help-topic-body"><p><strong>Print saved slots</strong> rereads physical FRAM and prints only populated saved slots, with their exact stored sentence and voice profile. Drafts, temporary serial RAM phrases and live CC overrides are not included.</p><p><strong>Export backup</strong> exports the saved bank as JSON. Import first loads a backup locally; <strong>Restore</strong> writes it to Kraftor. <strong>Format</strong> erases the bank and asks for confirmation.</p><p>For earlier firmware or a serial terminal, open <strong>Older firmware / serial tools</strong> at the bottom of the editor.</p></div></details>
   </dialog>
 
@@ -297,9 +334,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         { id: 'la', cc: 22, label: 'Laryngealization', min: 0, max: 100, value: 0 }
       ];
       const P = { manufacturer: 0x7d, k: 0x4b, v: 0x56, version: 1, chunk: 96 };
-      const C = { info: 0x01, get: 0x02, setBegin: 0x03, setData: 0x04, setCommit: 0x05, erase: 0x06, play: 0x07, format: 0x08, auditionBegin: 0x09, auditionData: 0x0a, auditionCommit: 0x0b, infoReply: 0x41, slotData: 0x42, ack: 0x7e, error: 0x7f };
+      const C = { info: 0x01, get: 0x02, setBegin: 0x03, setData: 0x04, setCommit: 0x05, erase: 0x06, play: 0x07, format: 0x08, auditionBegin: 0x09, auditionData: 0x0a, auditionCommit: 0x0b, setVoiceSource: 0x0c, infoReply: 0x41, slotData: 0x42, ack: 0x7e, error: 0x7f };
       const ERROR_NAMES = { 1: 'unknown command', 2: 'protocol version', 3: 'invalid length', 4: 'slot out of range', 5: 'FRAM not found', 6: 'FRAM is not formatted for VAX', 7: 'device busy', 8: 'transfer sequence', 9: 'checksum', 10: 'invalid VAX payload', 11: 'FRAM read', 12: 'FRAM write', 13: 'empty slot', 14: 'confirmation rejected' };
-      const DEFAULT_CAPS = { slots: 100, ready: false, maxPayload: 248, midiBase: 36, midiCount: 92, firmware: '1.3', profileVersion: 1, maxDesign: 96, maxText: 200, ccVersion: 0, midiChannel: null, dipBits: null };
+      const DEFAULT_CAPS = { slots: 100, ready: false, maxPayload: 248, midiBase: 36, midiCount: 92, firmware: '1.3', profileVersion: 1, maxDesign: 96, maxText: 200, ccVersion: 0, midiChannel: null, dipBits: null, voiceSource: null };
 
       let midiAccess = null;
       let midiOutput = null;
@@ -307,12 +344,15 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       let kraftorConnected = false;
       let connecting = false;
       let readingFram = false;
+      let savingVoiceSource = false;
+      let requestedVoiceSource = null;
       let serialPort = null;
       let serialWriter = null;
       let serialReader = null;
       let serialReadTask = null;
       let serialReadActive = false;
       let transaction = 0;
+      let payloadTransferQueue = Promise.resolve();
       let selectedSlot = 0;
       let selectedVoice = 0;
       let voiceDesign = '';
@@ -422,17 +462,32 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         return reply;
       }
 
-      async function sendPayload(beginCommand, dataCommand, commitCommand, payload, slot = null) {
+      function sendPayload(beginCommand, dataCommand, commitCommand, payload, slot = null) {
+        // The firmware has one receive buffer shared by saves and auditions.
+        const transfer = payloadTransferQueue.then(() => transferPayload(beginCommand, dataCommand, commitCommand, payload, slot));
+        payloadTransferQueue = transfer.catch(() => {});
+        return transfer;
+      }
+
+      async function transferPayload(beginCommand, dataCommand, commitCommand, payload, slot) {
         const tx = nextTransaction();
         const chunks = Math.ceil(payload.length / P.chunk);
         const checksum = crc16(payload);
         const begin = slot == null ? [...write14(payload.length), chunks, ...write16(checksum)] : [slot, ...write14(payload.length), chunks, ...write16(checksum)];
-        await sendAndWaitAck(tx, beginCommand, begin);
-        for (let chunk = 0; chunk < chunks; chunk++) {
-          const data = payload.slice(chunk * P.chunk, (chunk + 1) * P.chunk);
-          await sendAndWaitAck(tx, dataCommand, slot == null ? [chunk, ...data] : [slot, chunk, ...data]);
+        let stage = 'start';
+        try {
+          await sendAndWaitAck(tx, beginCommand, begin);
+          for (let chunk = 0; chunk < chunks; chunk++) {
+            stage = `data chunk ${chunk + 1}/${chunks}`;
+            const data = payload.slice(chunk * P.chunk, (chunk + 1) * P.chunk);
+            const acknowledgedChunk = await sendAndWaitAck(tx, dataCommand, slot == null ? [chunk, ...data] : [slot, chunk, ...data]);
+            if (acknowledgedChunk !== chunk) throw new Error(`unexpected chunk acknowledgement ${acknowledgedChunk}`);
+          }
+          stage = 'commit';
+          await sendAndWaitAck(tx, commitCommand, slot == null ? [] : [slot], 12000);
+        } catch (error) {
+          throw new Error(`${error.message} at ${stage} (${payload.length} bytes, transaction ${tx})`);
         }
-        await sendAndWaitAck(tx, commitCommand, slot == null ? [] : [slot], 12000);
       }
 
       async function saveSlotToDevice(slot, model) {
@@ -465,7 +520,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         }
         if (command === C.infoReply && entry.kind === 'info') {
           clearTimeout(entry.timer); pending.delete(tx);
-          entry.resolve({ slots: payload[0], ready: payload[1] === 1, maxPayload: read14(payload, 2), midiBase: payload[4], midiCount: payload[5], firmware: `${payload[6]}.${payload[7]}`, profileVersion: payload[8], maxDesign: payload[9], maxText: read14(payload, 10), ccVersion: payload[12] || 0, midiChannel: payload[13] >= 1 && payload[13] <= 16 ? payload[13] : null, dipBits: payload[14] >= 0 && payload[14] <= 15 ? payload[14] : null });
+          entry.resolve({ slots: payload[0], ready: payload[1] === 1, maxPayload: read14(payload, 2), midiBase: payload[4], midiCount: payload[5], firmware: `${payload[6]}.${payload[7]}`, profileVersion: payload[8], maxDesign: payload[9], maxText: read14(payload, 10), ccVersion: payload[12] || 0, midiChannel: payload[13] >= 1 && payload[13] <= 16 ? payload[13] : null, dipBits: payload[14] >= 0 && payload[14] <= 15 ? payload[14] : null, voiceSource: payload.length >= 16 && (payload[15] === 0 || payload[15] === 1) ? payload[15] : null });
           return;
         }
         if (command === C.slotData && entry.kind === 'slot') {
@@ -634,12 +689,51 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         await sendSerialLine(nativeDectalkPhrase(profile, text), '\r');
       }
 
+      function updateVoiceSourceUi() {
+        const known = kraftorConnected && (caps.voiceSource === 0 || caps.voiceSource === 1);
+        const controller = known && caps.voiceSource === 1;
+        const editable = known && caps.ready && !readingFram && !connecting && !savingVoiceSource;
+        const selectedSource = savingVoiceSource ? requestedVoiceSource : caps.voiceSource;
+        $('voiceSourceSlot').checked = known && selectedSource === 0;
+        $('voiceSourceController').checked = known && selectedSource === 1;
+        $('voiceSourceSlot').disabled = !editable;
+        $('voiceSourceController').disabled = !editable;
+        $('slotVoiceSettings').disabled = controller || savingVoiceSource;
+        $('voiceTitle').firstChild.textContent = controller ? 'Stored parameters · inactive' : 'Voice settings';
+        $('voiceSourceStatus').hidden = known && caps.ready && !savingVoiceSource;
+        $('voiceSourceStatus').textContent = savingVoiceSource ? 'Saving parameter mode…' : !kraftorConnected ? 'Connect Kraftor to choose a mode.' : !known ? 'Update Kraftor firmware to choose a parameter mode.' : 'Format memory to save the choice.';
+      }
+
+      async function persistVoiceSource(source) {
+        if (!kraftorConnected || !caps.ready || caps.voiceSource == null) throw new Error('Connect Kraftor with current firmware and formatted memory.');
+        const operation = payloadTransferQueue.then(async () => {
+          const tx = nextTransaction();
+          const saved = await sendAndWaitAck(tx, C.setVoiceSource, [source]);
+          if (saved !== source) throw new Error('Kraftor did not confirm the selected parameter mode.');
+          caps.voiceSource = source;
+        });
+        payloadTransferQueue = operation.catch(() => {});
+        await operation;
+      }
+
+      async function changeVoiceSource(source) {
+        if (savingVoiceSource || source === caps.voiceSource) return;
+        requestedVoiceSource = source; savingVoiceSource = true; updateVoiceSourceUi();
+        try {
+          await persistVoiceSource(source);
+          setNotice(`${source === 1 ? 'Controller' : 'Slot'} mode saved on Kraftor. Applies to the next trigger.`, 'success');
+        } catch (error) { setNotice(`Voice parameter mode was not saved: ${error.message}`, 'error'); }
+        finally { savingVoiceSource = false; requestedVoiceSource = null; updateVoiceSourceUi(); }
+      }
+
       function updateConnectionUi() {
         const serialConnected = Boolean(serialPort && serialWriter);
         const connected = kraftorConnected;
         const anyConnected = connected || serialConnected;
         $('connectionDot').classList.toggle('connected', anyConnected);
         $('connectionStatus').textContent = connected ? 'Kraftor connected' : serialConnected ? 'Kraftor connected · serial' : connecting ? 'Connecting…' : 'Kraftor disconnected';
+        $('firmwareVersion').textContent = connected ? `Firmware ${caps.firmware}` : '';
+        $('firmwareVersion').hidden = !connected;
         $('connectButton').textContent = connecting ? 'Connecting…' : anyConnected ? 'Disconnect Kraftor' : 'Connect Kraftor';
         $('connectButton').disabled = connecting;
         $('bulkPasteButton').disabled = connecting || readingFram;
@@ -656,6 +750,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         $('formatButton').disabled = !(connected && caps.slots > 0 && !readingFram);
         updateSlotActionButtons();
         updateMidiControlUi();
+        updateVoiceSourceUi();
         if (connected) {
           const memoryStatus = !caps.slots ? 'Memory not detected' : caps.ready ? `Memory available · ${caps.slots} slots` : 'Memory needs formatting';
           $('deviceSummary').textContent = memoryStatus;
@@ -670,7 +765,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
           badge.classList.toggle('unavailable', kraftorConnected && !supported);
           badge.title = `CC ${badge.dataset.cc}: ${badge.dataset.range}.${kraftorConnected && !supported ? ' Not supported by the connected firmware.' : ''}`;
         });
-        $('midiControlHint').textContent = supported ? 'Send these CCs on the MIDI channel shown above for the next MIDI-triggered phrase. CC121 restores stored voice settings.' : kraftorConnected ? 'The connected firmware does not report CC support. Install the updated VAX firmware to use CC16–22.' : 'CC16–22 are available in VAX firmware 1.3. CC121 clears live overrides.';
+        $('midiControlHint').textContent = supported ? 'Send these CCs on the MIDI channel shown above for the next MIDI-triggered phrase. CC121 resets the controller voice to its defaults.' : kraftorConnected ? 'The connected firmware does not report CC support. Install the updated VAX firmware to use CC16–22.' : 'CC16–22 are available in VAX firmware 1.3. CC121 resets controller voice settings.';
         $('midiStatusRefreshButton').disabled = !kraftorConnected;
         $('midiChannelStatus').textContent = kraftorConnected && caps.midiChannel != null ? `MIDI channel ${caps.midiChannel}` : kraftorConnected ? 'Channel not reported' : 'Connect to read channel';
         const known = kraftorConnected && caps.dipBits != null;
@@ -839,7 +934,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         if (!bank.saved.some(Boolean)) html += '<p class="midi-ref-sub">No saved sentences in this FRAM bank.</p>';
         if (source.ccVersion === 1) {
         html += '<h3 class="midi-ref-block-title">MIDI controls — firmware 1.3</h3><div class="reference-cc-grid">';
-        const ccLegend = [['16', 'Voice', '0–8: Paul through Wendy'], ['17', 'Speech rate', '0–127 → 75–600'], ['18', 'Average pitch', '0–127 → 50–500'], ['19', 'Pitch range', '0–127 → 0–250'], ['20', 'Breathiness', '0–127 → 0–70'], ['21', 'Head size', '0–127 → 65–135'], ['22', 'Laryngealization', '0–127 → 0–100'], ['121', 'Reset live overrides', 'Return to stored/serial profile']];
+        const ccLegend = [['16', 'Voice', '0–8: Paul through Wendy'], ['17', 'Speech rate', '0–127 → 75–600'], ['18', 'Average pitch', '0–127 → 50–500'], ['19', 'Pitch range', '0–127 → 0–250'], ['20', 'Breathiness', '0–127 → 0–70'], ['21', 'Head size', '0–127 → 65–135'], ['22', 'Laryngealization', '0–127 → 0–100'], ['121', 'Reset controller voice', 'Reset controller voice defaults']];
         html += ccLegend.map(([cc, name, range]) => `<div class="reference-cc-item"><strong>CC${cc} · ${name}</strong><br>${range}</div>`).join('');
         html += '</div>';
         } else html += '<p class="midi-ref-sub">The connected firmware does not report support for the CC16–22 map.</p>';
@@ -913,6 +1008,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         updateConnectionUi();
         try {
           clearBulkPasteUndo();
+          caps = { ...caps, ...(await requestInfo()) };
           setNotice(`Reading ${caps.slots} physical FRAM slots…`);
           for (let slot = 0; slot < caps.slots; slot++) {
             const bytes = await requestSlot(slot);
@@ -957,7 +1053,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       }
 
       function backupObject() {
-        return { format: 'polaxis-kraftor-vax-fram-v1', exportedAt: new Date().toISOString(), device: { model: 'VAX', firmware: caps.firmware, slots: caps.slots, midiBase: caps.midiBase, midiCount: caps.midiCount, profileVersion: caps.profileVersion }, slots: slots.map((state, slot) => ({ slot, note: slot < caps.midiCount ? caps.midiBase + slot : null, ...(state.saved || { empty: true }) })) };
+        return { settings: caps.voiceSource == null ? undefined : { voiceSource: caps.voiceSource === 1 ? 'controller' : 'slot' }, format: 'polaxis-kraftor-vax-fram-v1', exportedAt: new Date().toISOString(), device: { model: 'VAX', firmware: caps.firmware, slots: caps.slots, midiBase: caps.midiBase, midiCount: caps.midiCount, profileVersion: caps.profileVersion }, slots: slots.map((state, slot) => ({ slot, note: slot < caps.midiCount ? caps.midiBase + slot : null, ...(state.saved || { empty: true }) })) };
       }
 
       function downloadJson(data, filename) {
@@ -968,6 +1064,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       function validateBackup(data) {
         if (!data || data.format !== 'polaxis-kraftor-vax-fram-v1' || !Array.isArray(data.slots)) throw new Error('This is not a VAX FRAM backup.');
         if (data.slots.length !== caps.slots) throw new Error(`Backup has ${data.slots.length} slots; device reports ${caps.slots}.`);
+        const source = data.settings?.voiceSource;
+        if (source != null && source !== 'slot' && source !== 'controller') throw new Error('Backup contains an invalid voice parameter mode.');
+        if (source != null && caps.voiceSource == null) throw new Error('Update Kraftor firmware to restore this backup\'s parameter mode.');
         const seen = new Set();
         const models = Array(caps.slots).fill(null);
         data.slots.forEach(entry => {
@@ -975,6 +1074,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
           seen.add(entry.slot);
           if (!entry.empty) { const model = { voice: entry.voice, rate: entry.rate, design: entry.design || '', text: entry.text || '' }; buildPayload(model, model.text); models[entry.slot] = model; }
         });
+        models.voiceSource = source == null ? null : source === 'controller' ? 1 : 0;
         return models;
       }
 
@@ -986,6 +1086,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
             if (importedBackup[slot]) await saveSlotToDevice(slot, importedBackup[slot]);
             else { const tx = nextTransaction(); await sendAndWaitAck(tx, C.erase, [slot]); }
           }
+          if (importedBackup.voiceSource != null) await persistVoiceSource(importedBackup.voiceSource);
           importedBackup = null; await reloadFram(); setNotice('Backup restored and reread from physical FRAM.', 'success');
         } catch (error) { setNotice(`Restore stopped: ${error.message}`, 'error'); }
       }
@@ -1082,6 +1183,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         dialog.showModal();
         if (topicId) $(topicId).querySelector('summary').focus();
       }
+      $('voiceSourceSlot').addEventListener('change', () => changeVoiceSource(0));
+      $('voiceSourceController').addEventListener('change', () => changeVoiceSource(1));
       $('helpButton').addEventListener('click', () => openHelp());
       $('dectalkHelpButton').addEventListener('click', () => openHelp('dectalkHelpTopic'));
       $('helpCloseButton').addEventListener('click', () => $('helpDialog').close());
@@ -1161,7 +1264,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       $('importButton').addEventListener('click', () => $('importFile').click());
       $('importFile').addEventListener('change', async event => { try { const data = JSON.parse(await event.target.files[0].text()); importedBackup = validateBackup(data); $('restoreButton').disabled = !(kraftorConnected && caps.ready); setNotice('Backup loaded locally. Review it, then choose Restore to write FRAM.', 'success'); } catch (error) { importedBackup = null; setNotice(`Import failed: ${error.message}`, 'error'); } finally { event.target.value = ''; } });
       $('restoreButton').addEventListener('click', restoreBackup);
-      $('formatButton').addEventListener('click', async () => { if (!confirm('Format this FRAM for VAX? This erases all 100 VAX slot headers and cannot be undone.')) return; try { const tx = nextTransaction(); await sendAndWaitAck(tx, C.format, [0x56,0x41,0x58], 20000); caps.ready = true; resetSlots(caps.slots); updateConnectionUi(); setNotice('FRAM formatted for VAX. All slots are empty.', 'success'); } catch (error) { setNotice(`Format failed: ${error.message}`, 'error'); } });
+      $('formatButton').addEventListener('click', async () => { if (!confirm('Format this FRAM for VAX? This erases all 100 VAX slot headers and cannot be undone.')) return; try { const tx = nextTransaction(); await sendAndWaitAck(tx, C.format, [0x56,0x41,0x58], 20000); caps = { ...caps, ...(await requestInfo()) }; resetSlots(caps.slots); updateConnectionUi(); setNotice('FRAM formatted for VAX. All slots are empty. Parameter mode is Slot.', 'success'); } catch (error) { setNotice(`Format failed: ${error.message}`, 'error'); } });
 
       renderDesignControls(); updateDesignFromControls(); renderVoiceGrid(); resetSlots(caps.slots); updateConnectionUi(); updateEditorDetails();
     })();
