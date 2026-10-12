@@ -31,7 +31,7 @@ slot** follow the selected mode. Inline DECtalk commands can override either
 profile.
 
 Live controller values affect the next trigger and remain in RAM. Restart or
-CC121 resets them to Paul, rate 75 and the default design. Changing modes does
+CC121 clears design overrides and returns to Paul at rate 75 with its natural voice settings. Changing modes does
 not erase saved sentences or their settings. Older banks default to Slot;
 older firmware may require an update to enable mode selection.
 
@@ -48,7 +48,7 @@ Sliders edit drafts; they do not send live CC messages.
 
 | CC | Parameter | MIDI values → parameter range |
 | --- | --- | --- |
-| 16 | Voice | 0–8: Paul, Harry, Betty, Ursula, Dennis, Kit, Frank, Rita, Wendy |
+| 16 | Voice | 0–127 across nine voices: Paul, Harry, Betty, Ursula, Dennis, Kit, Frank, Rita, Wendy |
 | 17 | Speech rate | 0–127 → 75–600 |
 | 18 | Average pitch | 0–127 → 50–500 |
 | 19 | Pitch range | 0–127 → 0–250 |
@@ -102,3 +102,11 @@ The following commands are available in the updated firmware 1.6 build. Earlier
 Temporary `@` phrases use notes 36–47, up to 12 phrases. They take priority over
 matching saved-slot MIDI triggers, disappear on restart and never write FRAM.
 Designer **Play saved slot** and serial `/pN` still play the saved FRAM slot.
+
+CC map version 2 uses the full CC16 range in nine bands: 0–14 Paul, 15–28 Harry,
+29–42 Betty, 43–56 Ursula, 57–71 Dennis, 72–85 Kit, 86–99 Frank, 100–113 Rita,
+114–127 Wendy. Each preset keeps its natural design until CC18–22 overrides a
+parameter; overrides persist across voice changes until reset. Older map
+version 1 uses direct CC16 voice numbers 0–8; the connected badge and printed
+reference follow the reported map. Stored slot voices and serial `/v0`–`/v8`
+still use direct voice numbers. Embedded sentence commands retain priority.
