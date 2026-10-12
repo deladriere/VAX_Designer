@@ -81,8 +81,8 @@ Open **Older firmware / serial tools → Connect serial**, or use a separate
 terminal at **115200 baud**. Disconnect serial before using the main connection.
 Designer memory operations use the main USB MIDI connection.
 
-The following commands are available in the updated firmware 1.6 build. Earlier
-1.6 builds may lack `/g0`, `/g1` and `/pN`; flash the latest local `firmware.uf2`.
+The following commands are available in the updated firmware 1.0 build. Earlier
+1.0 builds may lack `/g0`, `/g1` and `/pN`; flash the latest local `firmware.uf2`.
 
 | Command | Action |
 | --- | --- |

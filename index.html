@@ -376,7 +376,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         <div id="designControls" class="field" aria-label="Voice design controls"></div>
         <div class="button-row design-reset-row"><button id="resetDesignButton" class="btn" type="button">Reset voice settings</button></div>
         </fieldset>
-        <p id="midiControlHint" class="field-help">CC16–22 require VAX firmware 1.3. CC121 resets controller voice settings.</p>
+        <p id="midiControlHint" class="field-help">CC16–22 require VAX firmware 1.0. CC121 resets controller voice settings.</p>
       <section class="midi-channel-panel" aria-label="Kraftor MIDI channel and physical switches">
         <div class="midi-channel-head"><strong id="midiChannelStatus">Connect to read channel</strong><button id="midiStatusRefreshButton" class="btn" type="button" disabled>Refresh</button></div>
         <div class="midi-channel-body">
@@ -474,7 +474,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       const P = { manufacturer: 0x7d, k: 0x4b, v: 0x56, version: 1, chunk: 96 };
       const C = { info: 0x01, get: 0x02, setBegin: 0x03, setData: 0x04, setCommit: 0x05, erase: 0x06, play: 0x07, format: 0x08, auditionBegin: 0x09, auditionData: 0x0a, auditionCommit: 0x0b, setVoiceSource: 0x0c, infoReply: 0x41, slotData: 0x42, ack: 0x7e, error: 0x7f };
       const ERROR_NAMES = { 1: 'unknown command', 2: 'protocol version', 3: 'invalid length', 4: 'slot out of range', 5: 'FRAM not found', 6: 'FRAM is not formatted for VAX', 7: 'device busy', 8: 'transfer sequence', 9: 'checksum', 10: 'invalid VAX payload', 11: 'FRAM read', 12: 'FRAM write', 13: 'empty slot', 14: 'confirmation rejected' };
-      const DEFAULT_CAPS = { slots: 100, ready: false, maxPayload: 248, midiBase: 36, midiCount: 92, firmware: '1.3', profileVersion: 1, maxDesign: 96, maxText: 200, ccVersion: 0, midiChannel: null, dipBits: null, voiceSource: null };
+      const DEFAULT_CAPS = { slots: 100, ready: false, maxPayload: 248, midiBase: 36, midiCount: 92, firmware: '1.0', profileVersion: 1, maxDesign: 96, maxText: 200, ccVersion: 0, midiChannel: null, dipBits: null, voiceSource: null };
 
       let midiAccess = null;
       let midiOutput = null;
@@ -904,7 +904,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
           badge.classList.toggle('unavailable', kraftorConnected && !supported);
           badge.title = `CC ${badge.dataset.cc}: ${badge.dataset.range}.${kraftorConnected && !supported ? ' Not supported by the connected firmware.' : ''}`;
         });
-        $('midiControlHint').textContent = supported ? 'Send these CCs on the MIDI channel shown above for the next MIDI-triggered phrase. CC121 resets the controller voice to its defaults.' : kraftorConnected ? 'The connected firmware does not report CC support. Install the updated VAX firmware to use CC16–22.' : 'CC16–22 are available in VAX firmware 1.3. CC121 resets controller voice settings.';
+        $('midiControlHint').textContent = supported ? 'Send these CCs on the MIDI channel shown above for the next MIDI-triggered phrase. CC121 resets the controller voice to its defaults.' : kraftorConnected ? 'The connected firmware does not report CC support. Install the updated VAX firmware to use CC16–22.' : 'CC16–22 are available in VAX firmware 1.0. CC121 resets controller voice settings.';
         $('midiStatusRefreshButton').disabled = !kraftorConnected;
         $('midiChannelStatus').textContent = kraftorConnected && caps.midiChannel != null ? `MIDI channel ${caps.midiChannel}` : kraftorConnected ? 'Channel not reported' : 'Connect to read channel';
         const known = kraftorConnected && caps.dipBits != null;
@@ -1072,7 +1072,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         }
         if (!bank.saved.some(Boolean)) html += '<p class="midi-ref-sub">No saved sentences in this FRAM bank.</p>';
         if ([1, 2].includes(source.ccVersion)) {
-        html += '<h3 class="midi-ref-block-title">MIDI controls — firmware 1.3</h3><div class="reference-cc-grid">';
+        html += '<h3 class="midi-ref-block-title">MIDI controls — firmware 1.0</h3><div class="reference-cc-grid">';
         const ccLegend = [['16', 'Voice', source.ccVersion === 1 ? '0–8: Paul through Wendy' : '0–127 → nine voices, Paul through Wendy'], ['17', 'Speech rate', '0–127 → 75–600'], ['18', 'Average pitch', '0–127 → 50–500'], ['19', 'Pitch range', '0–127 → 0–250'], ['20', 'Breathiness', '0–127 → 0–70'], ['21', 'Head size', '0–127 → 65–135'], ['22', 'Laryngealization', '0–127 → 0–100'], ['121', 'Reset controller voice', 'Reset controller voice defaults']];
         html += ccLegend.map(([cc, name, range]) => `<div class="reference-cc-item"><strong>CC${cc} · ${name}</strong><br>${range}</div>`).join('');
         html += '</div>';
