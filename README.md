@@ -9,7 +9,7 @@ Kraftor's FRAM memory, then trigger them by MIDI with Kraftor running standalone
 
 1. Connect Kraftor with a USB data cable and open `index.html` in a browser that supports USB MIDI device access.
 2. Click **Connect Kraftor** and allow access. The connected firmware version appears beside the connection status.
-3. Select a slot on the right. Choose **Slot** under **Voice parameters** to edit its voice settings.
+3. Select a slot on the left. Choose **Slot** under **Voice parameters** to edit its voice settings.
 4. Enter a sentence, choose a voice and adjust the sliders. **Audition draft** lets you hear it before saving.
 5. Click **Save to Kraftor**. **Play saved slot** plays the saved sentence using the selected parameter mode.
 
